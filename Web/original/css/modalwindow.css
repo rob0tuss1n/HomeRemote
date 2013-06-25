@@ -1,0 +1,55 @@
+/*
+Template Name: GodZilla
+Author: Rory Kranendonk
+Author URI: http://www.dreamwire.nl
+Version: 1.0
+*/
+
+.ui-dialog {
+	position : absolute;
+	background : #FFFFFF;
+	border : 1px solid #e5e5e5;
+	z-index : 99999;
+	width : 300px;
+}
+
+.ui-dialog .ui-dialog-titlebar {
+	display : block;
+	background : url(../gfx/back-title.gif) repeat-x left top;
+	height : 31px;
+}
+
+.ui-dialog .ui-dialog-title {
+	float : left;
+	background : url(../gfx/title-bullit.gif) no-repeat 9px center;
+	margin : 0;
+	padding : 0;
+	font : 15px/2.0em 'MyriadProRegular', Arial;
+	text-indent : 25px;
+	text-transform : uppercase;
+	font-weight : normal;
+	word-spacing : 3px;
+	height : 29px;
+}
+
+.ui-dialog .ui-dialog-titlebar-close {
+	float : right;  
+	background : url(../gfx/hide.gif) no-repeat left top;
+	overflow : hidden;
+	cursor : pointer;
+	width : 32px;
+	height : 29px;
+}
+
+.ui-dialog .ui-dialog-content {
+	background-color : #FFFFFF;
+	overflow : auto;
+}
+
+.ui-dialog .ui-dialog-content.forms {
+	padding : 0;
+}
+
+.ui-draggable .ui-dialog-titlebar {
+	cursor : move;
+}

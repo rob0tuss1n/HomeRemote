@@ -1,0 +1,41 @@
+/*
+Template Name: GodZilla
+Author: Rory Kranendonk
+Author URI: http://www.dreamwire.nl
+Version: 1.0
+*/
+
+#right .box .content .system {
+	display : block;
+	margin : 0 0 5px;
+	padding : 5px 10px 4px 33px;
+	font : 12px/1.6em Arial;
+}
+
+#right .box .content .system:last-child {
+	margin : 0;
+}
+
+#right .box .content .system.error {
+	background : url(../gfx/icon-error.png) no-repeat 10px 7px #FCCAC1;
+	border: 1px solid #E18B7C;
+	color : #c33820;
+}
+
+#right .box .content .system.warning {
+	background : url(../gfx/icon-warning.png) no-repeat 10px 7px #fce1c1;
+	border: 1px solid #e1b37c;
+	color : #c37820;
+}
+
+#right .box .content .system.info {
+	background : url(../gfx/icon-info.png) no-repeat 10px 7px #c1dafc;
+	border: 1px solid #7ca7e1;
+	color : #2065c3;
+}
+
+#right .box .content .system.succes {
+	background : url(../gfx/icon-succes.png) no-repeat 10px 7px #defcc1;
+	border: 1px solid #aee17c;
+	color : #62af17;
+}

@@ -1,0 +1,534 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+
+<head>
+	
+	<meta http-equiv="Content-Type" content="text/html;charset=utf-8" /> 
+	<title>Godzilla - More options</title>
+	
+	<style type="text/css">
+		@import url("css/style.css");
+		@import url('css/style_text.css');
+		@import url("css/login.css");
+		@import url("css/link-buttons.css");
+		@import url("css/fullcalendar.css");
+		@import url("css/forms.css");
+		@import url("css/form-buttons.css");
+		@import url("css/accordion.css");
+		@import url("css/modalwindow.css");
+		@import url("css/system-messages.css");
+		@import url("css/datatable.css");
+		@import url("css/statics.css");
+		@import url("css/tabs.css");
+		@import url("css/alerts.css");
+		@import url("css/tooltip.css");
+		@import url("css/notifications.css");
+		@import url("css/prettify.css");
+		@import url("css/elfinder.css");
+		@import url("css/pirebox.css");
+		@import url("css/colorpicker.css");
+		@import url("css/wizard.css");
+		@import url("css/wysiwyg.css");
+		@import url("css/wysiwyg.modal.css");
+		@import url("css/wysiwyg-editor.css");
+	</style>
+	
+	<!--[if lte IE 8]>
+		<script type="text/javascript" src="js/excanvas.min.js"></script>
+	<![endif]-->
+	
+	<script type="text/javascript" src="js/jquery-1.7.1.min.js"></script>
+	<script type="text/javascript" src="js/jquery-ui.js"></script>
+	<script type="text/javascript" src="js/jquery-ui-select.js"></script>
+	<script type="text/javascript" src="js/jquery-ui-spinner.js"></script>
+	<script type="text/javascript" src="js/jquery.customInput.js"></script>
+	<script type="text/javascript" src="js/jquery.dataTables.js"></script>
+	<script type="text/javascript" src="js/jquery.smartwizard-2.0.min.js"></script>
+	<script type="text/javascript" src="js/jquery.alerts.js"></script>
+	<script type="text/javascript" src="js/jquery.flot.js"></script>
+	<script type="text/javascript" src="js/jquery.graphtable-0.2.js"></script>
+	<script type="text/javascript" src="js/jquery.flot.pie.min.js"></script>
+	<script type="text/javascript" src="js/jquery.flot.resize.min.js"></script>
+	<script type="text/javascript" src="js/jquery.filestyle.mini.js"></script>
+	<script type="text/javascript" src="js/prettify.js"></script>
+	<script type="text/javascript" src="js/elfinder.min.js"></script>
+	<script type="text/javascript" src="js/jquery.jgrowl.js"></script>
+	<script type="text/javascript" src="js/colorpicker.js"></script>
+	<script type="text/javascript" src="js/jquery.tipsy.js"></script>
+	<script type="text/javascript" src="js/fullcalendar.min.js"></script>
+	<script type="text/javascript" src="js/pirobox.extended.min.js"></script>
+	<script type="text/javascript" src="js/jquery.validate.min.js"></script>
+	<script type="text/javascript" src="js/jquery.metadata.js"></script>
+	<script type="text/javascript" src="js/jquery.wysiwyg.js"></script>
+	<script type="text/javascript" src="js/controls/wysiwyg.image.js"></script>
+	<script type="text/javascript" src="js/controls/wysiwyg.link.js"></script>
+	<script type="text/javascript" src="js/controls/wysiwyg.table.js"></script>
+	<script type="text/javascript" src="js/plugins/wysiwyg.rmFormat.js"></script>
+	<script type="text/javascript" src="js/costum.js"></script>	
+	
+</head>
+
+<body onload="prettyPrint()">
+
+<div id="wrapper">
+	<div id="left">
+		<h1><a href="/"><b>God</b>zilla</a></h1>
+		<ul>
+			<li><a href="dashboard.html">Dashboard</a></li>
+			<li><a href="form-elements.html">Form Elements</a></li>
+			<li><a href="table-options.html">Table Options</a></li>
+			<li><a href="chart-options.html">Chart options</a></li>
+			<li><a href="typography.html">Typography</a></li>
+			<li><a href="gallery.html">Gallery</a></li>
+			<li><a href="file-browser.html">File browser</a></li>
+			<li class="active">
+				<a href="#">Menu with submenu</a>
+				<ul>
+					<li><a href="#">The first item</a></li>
+					<li><a href="#">The second item</a></li>
+					<li class="active">
+						<a href="#">The third item</a>
+						<ul>
+							<li><a href="#">The first item</a></li>
+							<li class="active"><a href="#">The second item</a></li>
+							<li><a href="#">And a third one</a></li>
+						</ul>
+					</li>
+					<li><a href="#">The fourth item</a></li>
+					<li><a href="#">The fifth item</a></li>
+				</ul>
+			</li>
+			<li class="active"><a href="more-options.html">More options</a></li>
+			<li><a href="boxgrid.html">Box grid</a></li>
+			<li><a href="icons.html">Free icons</a></li>
+		</ul>
+		
+		<div id="credits">&#169; Copyright 2012 Godzilla</div>
+	</div>
+	<div id="right">
+	
+		<div id="top-bar">
+			<ul>
+				<li>Welcome, John Do</li>
+				<li><a href="#"><img src="gfx/icon-profile.png" alt="Profile" /> Profile</a></li>
+				<li>
+					<a href="#"><img src="gfx/icon-message.png" alt="Messages" /> Messages <span>3</span></a>
+					<ul>
+						<li>
+							<a href="#">
+								<h4>New user!</h4>
+								Donec molestie aliquam ipsum, ac ornare sem imperdiet sit amet.
+							</a>
+						</li>
+						<li>
+							<a href="#">
+								<h4>Administrator message</h4>
+								Etiam lorem eros, accumsan id volutpat ut, interdum quis diam.
+							</a>
+						</li>
+						<li>
+							<a href="#">
+								<h4>Welcome to Godzilla</h4>
+								Sed non velit a tortor faucibus dictum.
+								Sed scelerisque vehicula felis.
+							</a>
+						</li>
+					</ul>
+				</li>
+				<li><a href="#"><img src="gfx/icon-settings.png" alt="Settings" /> Settings</a></li>
+				<li><a href="#"><img src="gfx/icon-logout.png" alt="Logout" /> Logout</a></li>
+			</ul>
+		</div>
+		
+		<div id="breadcrumbs">
+			<ul>
+				<li><a href="#">Login</a></li>
+				<li class="active"><a href="#">More options</a></li>
+			</ul>
+			<div id="search">
+				<input type="text" value="" placeholder="Search" />
+				<button type="submit"></button>
+			</div>
+		</div>
+		
+		<div id="main">
+		
+			<div class="section">
+				<div class="half">
+					<div class="box">
+						<div class="title">
+							<h2>Link Buttons</h2>
+							<div class="hide"></div>
+						</div>
+						<div class="content nopadding">
+							<div class="row">
+								<a href="#" class="btn medium grey"><span>Link</span></a>
+								<a href="#" class="btn medium black"><span>Link</span></a>
+								<a href="#" class="btn medium red"><span>Link</span></a>
+								<a href="#" class="btn medium orange"><span>Link</span></a>
+								<a href="#" class="btn medium blue"><span>Link</span></a>
+								<a href="#" class="btn medium green"><span>Link</span></a>
+								<a href="#" class="btn medium brown"><span>Link</span></a>
+								<a href="#" class="btn medium purple"><span>Link</span></a>
+							</div>
+							<div class="row">
+								<a href="#" class="btn grey"><span>Link</span></a>
+								<a href="#" class="btn black"><span>Link</span></a>
+								<a href="#" class="btn red"><span>Link</span></a>
+								<a href="#" class="btn orange"><span>Link</span></a>
+								<a href="#" class="btn blue"><span>Link</span></a>
+								<a href="#" class="btn green"><span>Link</span></a>
+								<a href="#" class="btn brown"><span>Link</span></a>
+								<a href="#" class="btn purple"><span>Link</span></a>
+							</div>
+						</div>
+					</div>
+					
+					<div class="box">
+						<div class="title">
+							<h2>Progressbars</h2>
+							<div class="hide"></div>
+						</div>
+						<div class="content nopadding">
+							<div class="row">
+								<label>Normal</label>
+								<div class="rowright">
+									<div class="progressbar-normal" value="50%"></div>
+								</div>
+							</div>
+							<div class="row">
+								<label>Animated</label>
+								<div class="rowright">
+									<div class="progressbar-count" value="100%"></div>
+								</div>
+							</div>
+							<div class="row">
+								<label>Animated with counter</label>
+								<div class="rowright">
+									<span class="percent"></span>
+									<div class="progressbar-count" value="50%"></div>
+								</div>
+							</div>
+						</div>
+					</div>
+					
+					<div class="box">
+						<div class="title">
+							<h2>Alert boxes</h2>
+							<div class="hide"></div>
+						</div>
+						<div class="content">
+							<button type="submit" class="alert medium grey"><span>Usual alert</span></button>
+							<button type="submit" class="confirm medium grey"><span>Confirm box</span></button>
+							<button type="submit" class="prompt medium grey"><span>Prompt box</span></button>
+							<button type="submit" class="htmlbox medium grey"><span>With HTML</span></button>
+						</div>
+					</div>
+					
+					<div class="box">
+						<div class="title">
+							<h2>System notifications</h2>
+							<div class="hide"></div>
+						</div>
+						<div class="content">
+							<button type="submit" class="medium grey" onclick="$.jGrowl('One more message...');"><span>Normal</span></button>
+							<button type="submit" class="medium grey" onclick="$.jGrowl('Stick this!', { sticky: true });"><span>Sticky</span></button>
+							<button type="submit" class="medium grey" onclick="$.jGrowl('A message with a header', { header: 'Important' });"><span>With header</span></button>
+							<button type="submit" class="medium grey" onclick="$.jGrowl('A message that will live a little longer.', { life: 10000 });"><span>Longer life</span></button>
+						</div>
+					</div>
+					
+					<div class="box">
+						<div class="title">
+							<h2>System messages</h2>
+							<div class="hide"></div>
+						</div>
+						<div class="content">
+							<div class="system error">This is a <b>error</b> placed text message.</div>
+							
+							<div class="system warning">This is a <b>warning</b> placed text message.</div>
+							
+							<div class="system info">This is a <b>information</b> placed text message.</div>
+							
+							<div class="system succes">This is a <b>succes</b> placed text message.</div>
+						</div>
+					</div>
+					
+					<div class="box">
+						<div class="title">
+							<h2>Sliders</h2>
+							<div class="hide"></div>
+						</div>
+						<div class="content nopadding">
+							<form action="">
+								<div class="row">
+									<label>Normal slider</label>
+									<div class="rowright">
+										<div class="slider single-slide">
+											Price: <input type="text" class="amount" value="" />
+											<div class="slide" value="75" max="600" min="0"></div>
+										</div>
+									</div>
+								</div>
+								<div class="row">
+									<label>Range slider</label>
+									<div class="rowright">
+										<div class="slider range-slide">
+											Price Range: <input type="text" class="amount-first" value="" /> -
+											<input type="text" class="amount-second" value="" />
+											<div class="slide" value="75,300" max="600" min="0"></div> 
+										</div>
+									</div>
+								</div>
+								<div class="row">
+									<label>Snap slider</label>
+									<div class="rowright">
+										<div class="slider snap-slide">
+											Price: <input type="text" class="amount" value="" />
+											<div class="slide" value="75" max="600" min="0" step="50"></div> 
+										</div>
+									</div>
+								</div>
+								<div class="row">
+									<label>Vertical slider</label>
+									<div class="rowright">
+										<div class="slider single-vert-slide">
+											<div class="slide" value="20" max="100" min="0"></div> 
+										</div>
+										
+										<div class="slider single-vert-slide">
+											<div class="slide" value="40" max="100" min="0"></div> 
+										</div>
+										
+										<div class="slider single-vert-slide">
+											<div class="slide" value="60" max="100" min="0"></div> 
+										</div>
+										
+										<div class="slider single-vert-slide">
+											<div class="slide" value="80" max="100" min="0"></div> 
+										</div>
+										
+										<div class="slider single-vert-slide">
+											<div class="slide" value="100" max="100" min="0"></div> 
+										</div>
+									</div>
+								</div>
+							</form>
+						</div>
+					</div>
+					
+					<div class="box">
+						<div class="title">
+							<h2>Modal window</h2>
+							<div class="hide"></div>
+						</div>
+						<div class="content">
+							Fusce ante sapien, varius eu eleifend sed, egestas eu purus. Duis nec scelerisque sem. Proin ut mi in odio euismod porttitor.
+							Sed viverra eros sit amet ipsum dapibus cursus. <a href="#" class="modalopen">Open the modal window</a>, eleifend ac luctus sit amet, aliquam ac nulla. Curabitur
+							aliquam risus venenatis nulla ullamcorper at ultrices turpis tempor. Praesent ut mi ac nibh congue malesuada.
+							
+							<div class="modal" title="Modal Window">
+								<form action="">
+									<div class="row">
+										<label>Normal inputfield</label>
+										<div class="rowright"><input type="text" value="" /></div>
+									</div>
+									<div class="row">
+										<label>Password inputfield</label>
+										<div class="rowright"><input type="password" value="" /></div>
+									</div>
+									<div class="row">
+										<label>Selectbox medium</label>
+										<select>
+											<option selected="selected" value="">Option 01</option>
+											<option value="">Option 02</option>
+											<option value="">Option 03</option>
+											<option value="">Option 04</option>
+											<option value="">Option 05</option>
+										</select>
+									</div>
+									<div class="row">
+										<label>Textarea</label>
+										<div class="rowright"><textarea rows="5" cols=""></textarea></div>
+									</div>
+									<div class="row">
+										<label></label>
+										<button type="submit" class="medium grey"><span>Sumbit</span></button>
+									</div>
+								</form>
+							</div>
+						</div>
+					</div>
+				</div>
+				
+				<div class="half">
+					<div class="box">
+						<div class="title">
+							<h2>Wizard</h2>
+							<div class="hide"></div>
+						</div>
+						<div class="content nopadding">
+							<div class="wizard">
+								<ul>
+									<li><a href="#step-1">Step 1</a></li>
+									<li><a href="#step-2">Step 2</a></li>
+									<li><a href="#step-3">Step 3</a></li>
+								</ul>
+								<div id="step-1" class="nopadding">
+									<form action="">
+										<div class="row">
+											<label>Username</label>
+											<div class="rowright"><input type="text" value="" /></div>
+										</div>
+										<div class="row">
+											<label>Password</label>
+											<div class="rowright"><input type="password" value="" /></div>
+										</div>
+										<div class="row">
+											<label>Textarea</label>
+											<div class="rowright"><textarea rows="8" cols=""></textarea></div>
+										</div>
+									</form>
+								</div>
+								<div id="step-2">
+									<table cellspacing="0" cellpadding="0" border="0"> 
+										<thead> 
+											<tr> 
+												<th>Title</th>
+												<th>Status</th>
+												<th>Date created</th>
+												<th>Author</th>
+											</tr> 
+										</thead> 
+										<tbody> 
+											<tr> 
+												<td><a href="#">Vestibulum ante ipsum primis</a></td>
+												<td>Published</td>
+												<td>26th August 2011</td>
+												<td>First, Lastname</td>
+											</tr>
+											<tr> 
+												<td><a href="#">Quisque nulla libero</a></td>
+												<td>Draft</td>
+												<td>26th August 2011</td>
+												<td>First, Lastname</td>
+											</tr>
+											<tr> 
+												<td><a href="#">Donec pretium scelerisque mi id</a></td>
+												<td>Published</td>
+												<td>26th August 2011</td>
+												<td>First, Lastname</td>
+											</tr>
+											<tr> 
+												<td><a href="#">Nam porttitor dictum arcu</a></td>
+												<td>Draft</td>
+												<td>26th August 2011</td>
+												<td>First, Lastname</td>
+											</tr>
+											<tr> 
+												<td><a href="#">Duis suscipit mollis consectetur</a></td>
+												<td>Published</td>
+												<td>26th August 2011</td>
+												<td>First, Lastname</td>
+											</tr>
+											<tr> 
+												<td><a href="#">Vestibulum ante ipsum primis</a></td>
+												<td>Published</td>
+												<td>26th August 2011</td>
+												<td>First, Lastname</td>
+											</tr>
+											<tr> 
+												<td><a href="#">Quisque nulla libero</a></td>
+												<td>Draft</td>
+												<td>26th August 2011</td>
+												<td>First, Lastname</td>
+											</tr>
+										</tbody> 
+									</table>
+								</div>
+								<div id="step-3">
+									<h4>A nice title here</h4>
+									<p>
+										<b>Integer augue lacus, lobortis in luctus in, sodales non libero. Nulla facilisi. Morbi nec est ut eros
+										sollicitudin rhoncus. Pellentesque consectetur massa vitae eros varius in ultricies elit laoreet.</b>
+									</p>
+									<p>
+										Mauris aliquet orci mi, at gravida metus. Integer et ante eu augue faucibus dapibus. Pellentesque
+										iaculis tempus lorem, id convallis massa ultricies eu. Praesent facilisis nisi est, mattis rutrum sapien.
+										Etiam et justo libero, quis aliquam leo. Fusce eros velit, aliquam hendrerit tincidunt quis, laoreet id nisi.
+										Sed mauris velit, rutrum eget eleifend at, feugiat sed sem.
+									</p>
+								</div>
+							</div>
+						</div>
+					</div>
+					
+					<div class="box">
+						<div class="title">
+							<h2>Calendar</h2>
+							<div class="hide"></div>
+						</div>
+						<div class="content nopadding">
+							<div id="calendar"></div>
+						</div>
+					</div>
+					
+					<div class="box">
+						<div class="title">
+							<h2>Accordion</h2>
+							<div class="hide"></div>
+						</div>
+						<div class="content nopadding">
+							<div class="accordion">
+								<div><a href="#">Section 1</a></div>
+								<div>
+									<p>
+										Mauris mauris ante, blandit et, ultrices a, suscipit eget, quam. Integer
+										ut neque. Vivamus nisi metus, molestie vel, gravida in, condimentum sit
+										amet, nunc. Nam a nibh. Donec suscipit eros.
+									</p>
+								</div>
+								<div><a href="#">Section 2</a></div>
+								<div>
+									<p>
+										Sed non urna. Donec et ante. Phasellus eu ligula. Vestibulum sit amet
+										purus. Vivamus hendrerit, dolor at aliquet laoreet, mauris turpis porttitor
+										velit, faucibus interdum tellus libero ac justo.
+									</p>
+								</div>
+								<div><a href="#">Section 3</a></div>
+								<div>
+									<p>
+										Nam enim risus, molestie et, porta ac, aliquam ac, risus. Quisque lobortis.
+										Phasellus pellentesque purus in massa. Aenean in pede. Phasellus ac libero
+										ac tellus pellentesque semper. Sed ac felis.
+									</p>
+								</div>
+							</div>
+						</div>
+					</div>
+					
+					<div class="box">
+						<div class="title">
+							<h2>Tooltips</h2>
+							<div class="hide"></div>
+						</div>
+						<div class="content">
+							<button type="submit" class="tip-n medium grey" original-title="Bottom message"><span>Tooltip Bottom</span></button>
+							<button type="submit" class="tip-w medium grey" original-title="Left message"><span>Tooltip Left</span></button>
+							<button type="submit" class="tip-e medium grey" original-title="Right message"><span>Tooltip Right</span></button>
+							<button type="submit" class="tip-s medium grey" original-title="Top message"><span>Tooltip Top</span></button>
+						</div>
+					</div>
+
+				</div>
+			</div>
+	
+		</div>
+	</div>
+</div>
+
+
+</body>
+
+</html> 

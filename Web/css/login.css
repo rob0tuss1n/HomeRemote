@@ -1,0 +1,60 @@
+/*
+Template Name: GodZilla
+Author: Rory Kranendonk
+Author URI: http://www.dreamwire.nl
+Version: 1.0
+*/
+
+#wrapper.login {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	margin-top: -157px;
+	margin-left: -200px;
+	width: 400px;
+	min-width : 400px;
+	height: 315px;
+	min-height : 0;
+	
+}
+
+#wrapper.login #right{
+	left : 0;
+	background : none;
+	border-left : none;
+	padding : 0;
+	width : 100%;
+}
+
+#wrapper.login #right #main{
+	padding : 0;
+}
+
+#wrapper.login #right .box{
+	margin : 0;
+}
+
+#wrapper.login #right .box .content .content {
+	border-bottom: 1px solid #E5E5E5;
+}
+
+#wrapper.login #right .rowright.button{
+	margin : 0 0 0 130px;
+	text-align : right;
+}
+
+#wrapper.login #right label{
+	padding : 8px 0 0;
+}
+
+#wrapper.login #right label label{
+	padding : 0 0 0 23px;
+}
+
+#wrapper.login #right label .custom-checkbox:first-child {
+	margin : 0;
+}
+
+#wrapper.login #right .rowright.button button{
+	margin : 0;
+}

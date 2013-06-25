@@ -1,0 +1,134 @@
+/*
+Template Name: GodZilla
+Author: Rory Kranendonk
+Author URI: http://www.dreamwire.nl
+Version: 1.0
+*/
+
+html,body{
+	font : 12px/19px Arial;
+	color : #1c1c1c;
+}
+
+a , a:link, a:active, a:visited {
+	color : #807F7F;
+	text-decoration : underline;
+}
+
+a:hover {
+	color : #1c1c1c;
+	text-decoration : none;
+}
+
+@font-face {
+    font-family: 'MyriadProRegular';
+    src: url('../text/myriad-regular-webfont.eot');
+    src: url('../text/myriad-regular-webfont.eot?#iefix') format('embedded-opentype'),
+         url('../text/myriad-regular-webfont.woff') format('woff'),
+         url('../text/myriad-regular-webfont.ttf') format('truetype'),
+         url('../text/myriad-regular-webfont.svg#MyriadProRegular') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+
+#right .box .content p {
+	margin : 5px 0 20px;
+	padding : 0;
+}
+
+#right .box .content p:last-child {
+	margin : 5px 0 0;
+}
+
+#right .box .content ul {
+	margin : 0;
+	padding : 0;
+	list-style : none;
+}
+
+#right .box .content ul li {
+	margin : 0;
+	padding : 0 0 0 13px;
+	line-height : 24px;
+}
+
+#right .box .content ul.arrow li {
+	background : url(../gfx/list-arrow.gif) no-repeat left 9px;
+}
+
+#right .box .content ul.square li {
+	background : url(../gfx/list-square.gif) no-repeat left 9px;
+}
+
+#right .box .content ul.plus li {
+	background : url(../gfx/list-plus.gif) no-repeat left 9px;
+}
+
+#right .box .content ul.tick li {
+	background : url(../gfx/list-tick.gif) no-repeat left 8px;
+}
+
+#right .box .content pre {
+	background : #fbfbfb;
+	border : 1px solid #E5E5E5;
+	padding : 0;
+	margin : 0;
+	white-space : pre-wrap	;
+}
+
+#right .box .content code {
+	display : block;
+	padding : 0 0 0 10px;
+	margin : 0;
+}
+
+#right .box .content blockquote {
+	border : 1px solid #E5E5E5;
+	border-left : 4px solid #E5E5E5;
+	padding : 10px 15px;
+	margin : 15px 0 0 0;
+	font : italic 14px/19px Times New Roman;
+	text-align : center;
+}
+
+h1 {
+	margin : 0;
+	padding : 0;
+	font : 24px/1.0em 'MyriadProRegular', Arial;
+	font-weight : normal;
+}
+
+h2 {
+	margin : 0;
+	padding : 0;
+	font : 20px/1.0em 'MyriadProRegular', Arial;
+	font-weight : normal;
+}
+
+h3{
+	margin : 0;
+	padding : 0;
+	font : 18px/1.0em 'MyriadProRegular', Arial;
+	font-weight : normal;
+}
+
+h4{
+	margin : 0;
+	padding : 0;
+	font : 16px/1.0em 'MyriadProRegular', Arial;
+	font-weight : normal;
+}
+
+h5{
+	margin : 0;
+	padding : 0;
+	font : 14px/1.0em 'MyriadProRegular', Arial;
+	font-weight : normal;
+}
+
+h6{
+	margin : 0;
+	padding : 0;
+	font : 13px/1.0em 'MyriadProRegular', Arial;
+	font-weight : normal;
+}
