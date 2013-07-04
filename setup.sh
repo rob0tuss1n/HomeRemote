@@ -5,7 +5,8 @@ while true; do
     case $yn in
         [Yy]* ) 
             make install; break;;
-        [Nn]* ) exit;;
+        [Nn]* ) 
+            exit;;
         * ) echo "Please answer yes or no.";;
     esac
 done
