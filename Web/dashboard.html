@@ -64,6 +64,7 @@
 	<script type="text/javascript" src="js/controls/wysiwyg.link.js"></script>
 	<script type="text/javascript" src="js/controls/wysiwyg.table.js"></script>
 	<script type="text/javascript" src="js/plugins/wysiwyg.rmFormat.js"></script>
+    <script type="text/javascript" src="js/jquery.cookie.js"></script>
 	<script type="text/javascript" src="js/costum.js"></script>	
     <script type="text/javascript" src="homeremote.js"></script>
 	
@@ -81,15 +82,16 @@
 			<li><a href="temperature.html">Temperature</a></li>
 			<li><a href="inputs.html">Inputs</a></li>
 			<li><a href="events.html">Events</a></li>
+            <li><a href="settings.html">Settings</a></li>
 		</ul>
 	</div>
 	<div id="right">
 	
 		<div id="top-bar">
 			<ul>
-				<li>Welcome, John Do</li>
+                <li id="user-name"></li>
 				<li><a href="#"><img src="gfx/icon-settings.png" alt="Settings" /> Settings</a></li>
-				<li><a href="#"><img src="gfx/icon-logout.png" alt="Logout" /> Logout</a></li>
+				<li><a href="data/auth.php?action=logout"><img src="gfx/icon-logout.png" alt="Logout" /> Logout</a></li>
 			</ul>
 		</div>
 		
@@ -117,7 +119,7 @@
 							</thead> 
 							<tbody> 
 								<tr> 
-									<td>System Time</td><td id="time"></td>
+									<td>System Time</td><td width="45%" id="time"></td>
 								</tr> 
 								<tr> 
 									<td>Security</td><td id="security-overview"></td>

@@ -67,7 +67,6 @@
     <script type="text/javascript" src="js/jquery.cookie.js"></script>
     <script type="text/javascript" src="js/plugins/wysiwyg.rmFormat.js"></script>
     <script type="text/javascript" src="js/costum.js"></script>
-    <script type="text/javascript" src="imageviewer.js"></script>
     <script type="text/javascript" src="homeremote.js"></script>
 
 </head>
@@ -80,11 +79,11 @@
         <ul>
             <li><a href="dashboard.html">Home</a></li>
             <li><a href="lights.html">Lights</a></li>
-            <li class="active"><a href="security.html">Secutiry</a></li>
+            <li><a href="security.html">Secutiry</a></li>
             <li><a href="temperature.html">Temperature</a></li>
             <li><a href="inputs.html">Inputs</a></li>
             <li><a href="events.html">Events</a></li>
-            <li><a href="settings.html">Settings</a></li>
+            <li class="active"><a href="settings.html">Settings</a></li>
         </ul>
     </div>
     <div id="right">
@@ -100,85 +99,71 @@
         <div id="breadcrumbs">
             <ul>
                 <li><a>Login</a></li>
-                <li class="active"><a href="#">Security</a></li>
+                <li class="active"><a href="#">Settings</a></li>
             </ul>
         </div>
 
         <div id="main">
-
-            <div class="section">
-                <div class="box">
-                    <div class="title">
-                        <h2>Add Zone</h2>
-                        <div class="hide"></div>
-                    </div>
-                    <div class="content nopadding" style="display: none">
-                        <form id="new-zone-form">
-                            <div class="row">
-                                <label>Name</label>
-                                <div class="rowright">
-                                    <input id="new-zone-name" type="text">
-                                </div>
-                            </div>
-                            <div class="row">
-                                <label>Input</label>
-                                <div class="rowright">
-                                    <input id="new-zone-name" type="text">
-                                </div>
-                            </div>
-                        </form>
-                    </div>
+            <div class="box">
+                <div class="title">
+                    <h2>Settings</h2>
+                    <div class="hide"></div>
                 </div>
-            </div>
+                <div class="content nopadding">
+                    <div class="tabs">
+                        <div class="tabmenu">
+                            <ul>
+                                <li><a href="#tabs-1">General</a></li>
+                                <li><a href="#tabs-2">Accounts</a></li>
+                                <li><a href="#tabs-3">System Monitor</a></li>
+                            </ul>
+                        </div>
 
-            <div class="section">
-                <div class="box">
-                    <div class="title">
-                        <h2>Security Status</h2>
-                        <div class="hide"></div>
-                    </div>
-                    <div class="content">
-                        <table cellspacing="0" cellpadding="0" border="0">
-                            <thead>
-                            <tr>
-                                <th>Arm/Disarm System</th>
-                                <th width="33%"></th>
-                                <th width="33%"></th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td colspan="3" style="text-align: center;">Current Status: <span id="security-overview"></span></td>
-                                </tr>
-                                <tr>
-                                    <td style="text-align: center"><button class="medium green" onclick="armAway()"><span>Arm Away</span></button></td>
-                                    <td style="text-align: center"><button class="medium green" onclick="armNight()"><span>Arm Night</span></button></td>
-                                    <td style="text-align: center"><button class="medium red" onclick="disarm()"><span>Disarm</span></button></td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
+                        <div class="tab" id="tabs-1">
+                            <b>Quisque pellentesque, enim ac tempus rhoncus, lacus
+                                dolor dictum tellus, eget fringilla dui felis non lorem.</b><br />
+                            <br />
+                            Suspendisse tempor euismod tortor ut vestibulum. Cras
+                            ut mattis ligula. Donec eget tempor felis. Nulla commodo
+                            elit auctor diam consectetur placerat. In et tortor purus,
+                            ornare auctor dolor. Donec eget felis nibh, in hendrerit mi.<br />
+                            <br />
+                            Mauris porta facilisis quam, id vehicula orci condimentum.
+                            Proin sit amet metus arcu. Cras interdum sagittis orci, in
+                            dignissim justo porttitor sed. Nulla commodo elit auctor
+                            diam consectetur placerat.
+                        </div>
 
-            <div class="section">
-                <div class="box">
-                    <div class="title">
-                        <h2>Camera Feeds</h2>
-                        <div class="hide"></div>
-                    </div>
-                    <div id="camerafeeds" class="content">
+                        <div class="tab" id="tabs-2">
+                            <b>Aliquam erat volutpat. Sed euismod gravida odio vitae semper. Vestibulum
+                                ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia.</b><br />
+                            <br />
+                            Curae; Etiam est sapien gravida sit amet sodales sit amet, iaculis eget ante.
+                            Maecenas faucibus orci purus, sit amet rutrum dui. In at purus ut nisl varius
+                            bibendum Morbi lacinia vestibulum felis in scelerisque. Donec feugiat massa
+                            quis arcu condimentum fringilla. Donec eget dui diam. Curabitur et metus
+                            at tellus iaculis accumsan. Class aptent taciti sociosqu ad litora torquent
+                            per conubia nostra, per inceptos himenaeos.
+                        </div>
 
+                        <div class="tab" id="tabs-3">
+                            <b>Ut vel consectetur arcu. Vestibulum ante ipsum primis in faucibus orci
+                                luctus et ultrices posuere cubilia Curae; Nullam rutrum mattis nibh ut viverra.</b><br />
+                            <br />
+                            Sed feugiat, mi vitae pharetra laoreet, velit justo accumsan dui, a vulputate mi
+                            nulla non massa. In mauris est, pretium pharetra volutpat sed, tempus eget risus.
+                            Suspendisse euismod, libero non fermentum luctus, arcu orci tincidunt libero, eu
+                            sollicitudin augue ipsum vitae libero.<br />
+                            <br />
+                            Pellentesque ultrices porttitor enim, vitae cursus ante ullamcorper eget. Vivamus
+                            ut lorem est. Pellentesque mattis magna sit amet felis dapibus eget feugiat elit
+                            sagittis. In nec diam vel dolor commodo lacinia.
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
-<div id="gallery" title="Motion Snapshots" align="center">
-    <p id="name"></p>
-    <img id="image-view">
-    <span><a style="cursor: pointer" onclick="lastSnapshot()">Last</a></span><span><a style="cursor: pointer" onclick="nextSnapshot()">-Next</a></span>
 </div>
 
 

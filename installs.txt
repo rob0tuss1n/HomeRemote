@@ -1,0 +1,7 @@
+python-mysql
+python
+nginx
+motion
+easy_install py-notify
+python-psutil
+python-smbus

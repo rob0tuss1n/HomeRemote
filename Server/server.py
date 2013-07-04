@@ -1,4 +1,16 @@
+import sys
+import os
+try:
+   with open('lock.pid'): pass
+   print 'Lock file already exists! This probably means HomeRemote is already running or that it was improperly shutdown (crash)\n Delete the lockfile at /etc/remotehome/lock.pid and try again!'
+   sys.exit()
+except IOError:
+    with open('lock.pid', 'w') as lockfile:
+        os.chmod("/etc/homeremote/lock.pid", 0666)
+        lockfile.write(str(os.getpid()))
+        lockfile.close()
 import RPi.GPIO as GPIO
+from mcp import MCP230XX_GPIO as mcp
 import tornado.websocket
 import tornado.ioloop
 import tornado.web
@@ -6,33 +18,43 @@ import tornado.template
 import gui
 import signal
 import thread
-from remotehome import clients, event, events, inputs, outputs, gpio, security, cur, con
-import sys
+from remotehome import clients, event, events, inputs, outputs, gpio, security, cur, con, sensors, sensors_index
 
 security = security()
-
+nogui = False
+daemonize = False
 for i in sys.argv:
-    if not i == "-nogui":
-        gui.start()
-       
+    if i == "-nogui":
+        nogui = True
+    if i == "-D":
+        daemonize = True
+        nogui = True
+
+if not nogui:
+    gui.start()
+if daemonize:
+    gui.no_output = True
+
 if __name__ == "__main__":
     # Get pins and set them up
-    cur.execute("SELECT name, pin FROM lights")
+    cur.execute("SELECT name, pin FROM outputs")
     data = cur.fetchall()
     for i in data:
-        outputs[str(i['pin'])] = gpio(i['pin'], i['name'], 'out')
+        outputs[str(i['pin'])] = gpio(i['pin'], i['name'], "none", 'out')
         
     # Get inputs and set them up
-    cur.execute("SELECT name, pin FROM inputs")
+    cur.execute("SELECT name, pin, type FROM inputs")
     data = cur.fetchall()
     for i in data:
-        inputs[int(i['pin'])] = gpio(i['pin'], i['name'], 'in')
+        inputs[int(i['pin'])] = gpio(i['pin'], i['name'], i['type'], 'in')
     
     # Get events and set them up
-    cur.execute("SELECT id FROM events1")
+    cur.execute("SELECT id FROM events")
     eventsdata = cur.fetchall()
     for i in eventsdata:
         events[int(i['id'])] = event(int(i['id']), cur)
+
+sensors = sensors()
 
 class WebSocket(tornado.websocket.WebSocketHandler):
     def open(self):
@@ -46,44 +68,50 @@ class WebSocket(tornado.websocket.WebSocketHandler):
             if args[1] in outputs:
                 self.write_message("error:GPIO already setup on pin " + args[1])
             else:
-                outputs[args[1]] = gpio(args[1], args[2], 'out')
-                cur.execute("""INSERT INTO lights VALUES (NULL,%s,%s)""",(args[2],args[1]))
+                outputs[args[1]] = gpio(args[1], args[2], None, 'out')
+                cur.execute("""INSERT INTO outputs VALUES (NULL,%s,%s)""",(args[2],args[1]))
                 con.commit()
                 for i in clients:
                     i.write_message("addlight:"+args[1]+":"+args[2])
-                
+
         elif args[0] == "getoutputson":
             total = 0
             on = 0
             for i in outputs:
                 if outputs[i].get_state() == 1:
-                    on = on + 1;
+                    on = on + 1
                 else:
-                    total = total + 1;
-            self.write_message("lightoverview:"+str(on)+":"+str(total));
-        
+                    total = total + 1
+            self.write_message("lightoverview:"+str(on)+":"+str(total))
+
         elif args[0] == "setoutputstate":
             if args[1] in outputs:
-                res = outputs[args[1]].set_state(args[2])
+                res = outputs[args[1]].output(args[2])
                 if res is True:
                     self.write_message("ok:")
                 else:
-                    self.write_message("error:" + res)
+                    self.write_message("error:" + str(res))
             else:
                 self.write_message("error:Output does not exist on pin " + args[1])
-                
+
         elif args[0] == "togglepin":
             if args[1] in outputs:
-                res = outputs[args[1]].toggle(clients)
+                res = outputs[args[1]].toggle()
             else:
                 self.write_message("error:Output does not exist on pin " + args[1])
-                
+
         elif args[0] == "declarepins":
             for i in outputs:
-                if outputs[i].get_state() == 1:
-                    self.write_message("pinchange:"+str(outputs[i].pin)+":on")
-                elif outputs[i].get_state() == 0:
-                    self.write_message("pinchange:"+str(outputs[i].pin)+":off")
+                if outputs[i].input() == 1:
+                    if outputs[i].mcp:
+                        self.write_message("pinchange:mcp"+str(outputs[i].pin)+":on")
+                    else:
+                        self.write_message("pinchange:"+str(outputs[i].pin)+":on")
+                elif outputs[i].input() == 0:
+                    if outputs[i].mcp:
+                        self.write_message("pinchange:mcp"+str(outputs[i].pin)+":off")
+                    else:
+                        self.write_message("pinchange:"+str(outputs[i].pin)+":off")
                    
         elif args[0] == "declareevents":
             for i in events:
@@ -104,7 +132,7 @@ class WebSocket(tornado.websocket.WebSocketHandler):
                     i.write_message("eventchange:"+str(args[1])+":on")
 
         elif args[0] == "deletelight":
-            cur.execute("""DELETE FROM lights WHERE pin = '%s'""",(int(args[1])))
+            cur.execute("""DELETE FROM outputs WHERE pin = '%s'""",(int(args[1])))
             con.commit()
             del outputs[args[1]]
             for i in clients:
@@ -113,16 +141,16 @@ class WebSocket(tornado.websocket.WebSocketHandler):
                 
         elif args[0] == "newevent":
             args[5] = args[5].replace("-", ":")
-            cur.execute("""INSERT INTO events1 VALUES (NULL,%s,%s,%s,%s,%s,%s)""",(args[1],args[2], args[3], args[4], args[5], args[6]))
+            cur.execute("""INSERT INTO events VALUES (NULL,%s,%s,%s,%s,%s,%s)""",(args[1],args[2], args[3], args[4], args[5], args[6]))
             con.commit()
-            cur.execute("SELECT `id`, `trigger` FROM events1 WHERE name = '"+args[1]+"'")
+            cur.execute("SELECT `id`, `trigger` FROM events WHERE name = '"+args[1]+"'")
             eventdat = cur.fetchone()
             events[eventdat['id']] = event(eventdat['id'], cur)
             
         elif args[0] == "deleteevent":
             events[int(args[1])].stop_event()
             del events[int(args[1])]
-            cur.execute("""DELETE FROM events1 WHERE id = '%s'""",(int(args[1])))
+            cur.execute("""DELETE FROM events WHERE id = '%s'""",(int(args[1])))
             con.commit()
             for i in clients:
                 i.write_message("deleteevent:"+args[1])
@@ -132,13 +160,13 @@ class WebSocket(tornado.websocket.WebSocketHandler):
             if args[1] in inputs:
                 self.write_message("error:Input already exists on pin "+args[2])
             else:
-                cur.execute("""INSERT INTO inputs VALUES (NULL,%s,%s,%s)""",(args[1],args[2],args[3]))
+                cur.execute("""INSERT INTO inputs VALUES (NULL,%s,%s,%s,%s)""",(args[1],args[2],args[3],args[4]))
                 con.commit()
-                inputs[args[2]] = gpio(args[2], args[1], "in")
+                inputs[args[2]] = gpio(args[2], args[1], args[3], "in")
                 #events[int(args[2])] = event(0, True, args[2])
                 
         elif args[0] == "deleteinput":
-            cur.execute("SELECT name FROM events1 WHERE `trigger` = "+args[1])
+            cur.execute("SELECT name FROM events WHERE `trigger` = "+args[1])
             if cur.fetchone():
                 self.write_message("error:Please delete the associated event for this input first!")
             else:
@@ -165,7 +193,17 @@ class WebSocket(tornado.websocket.WebSocketHandler):
             security.disarm_system()
             for i in clients:
                 i.write_message("securitystatus:disarmed")
-                    
+        elif args[0] == "addcamera":
+            security.addcamera(args[1],args[2], args[3], args[4], args[5])
+        elif args[0] == "removecamera":
+            security.removecamera(args[1])
+        elif args[0] == "gettemp":
+            self.write_message("temperature:"+sensors.get_temperature())
+        elif args[0] == "gethumid":
+            self.write_message("humidity:"+sensors.get_humidity())
+        elif args[0] == "getlightlevel":
+            self.write_message("lightlevel:"+sensors.get_light_level())
+                
     def on_close(self):
         gui.console("Websocket closed")
         clients.remove(self)
@@ -180,8 +218,10 @@ def signal_handler(signal, frame):
         for i in inputs:
             if inputs[i].idling:
                 inputs[i].stop_input_idle()
+        sensors.temp_process.terminate()
         GPIO.cleanup()
         gui.end()
+        os.remove('lock.pid')
         sys.exit(0)
 signal.signal(signal.SIGINT, signal_handler)
 

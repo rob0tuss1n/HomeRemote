@@ -6,9 +6,15 @@ import thread
 from threading import Thread
 import time
 import gui
+import re
+import mcp as extender
+import subprocess
+import os
+import psutil
 
 GPIO.setmode(GPIO.BCM)
 GPIO.setwarnings(False)
+mcp = extender.Adafruit_MCP230XX(busnum=1, address=0x20, num_gpios=16)
 
 global clients
 global events
@@ -16,6 +22,7 @@ clients = []
 events = {}
 outputs = {}
 inputs = {}
+sensors_index = {"light": [], "temp": []}
 
 try:
     con = MySQLdb.connect('localhost', 'root', 'legoman1', 'automation', cursorclass=MySQLdb.cursors.DictCursor)
@@ -44,7 +51,7 @@ class event(object):
         self.pipe_thread = Thread(target=self.pipe_listen, args=())
         self.cur = cur
         self.id = id
-        self.cur.execute("""SELECT * FROM events1 WHERE id = %s""",(self.id))
+        self.cur.execute("""SELECT * FROM events WHERE id = %s""",(self.id))
         data = self.cur.fetchone()
         self.name = data['name']
         self.trigger = int(data['trigger'])
@@ -158,11 +165,11 @@ class event(object):
             conn.send("inputchange:"+str(self.trigger)+":on")
             gui.change_input_state(int(self.trigger), 1)
             for i in self.who:
-                if GPIO.input(int(i)) == 0:
+                if outputs[i].input() == 0:
                     alreadyon.append(i)
                     gui.console("Pin already on")
                 else:
-                    GPIO.output(int(i), 0)
+                    outputs[i].output(1)
                     gui.change_output_state(int(i), 1)
                     conn.send("pinchange:"+i+":on")
             targettime = int(time.time()) + int(self.timeout)
@@ -181,7 +188,7 @@ class event(object):
                 time.sleep(0.2)
             for i in self.who:
                 if not i in alreadyon:
-                    GPIO.output(int(i), 1)
+                    outputs[i].output(1)
                     conn.send("pinchange:"+i+":off")
                     gui.change_output_state(int(i), 0)
                     
@@ -194,7 +201,7 @@ class event(object):
             conn.send("inputchange:"+str(self.trigger)+":on")
             gui.change_input_state(self.trigger, 1)
             for i in self.who:
-                GPIO.output(int(i), state)
+                outputs[i].output(state)
                 gui.change_output_state(i, not state)
                 if state == 0:
                     state = 1
@@ -209,7 +216,7 @@ class event(object):
             conn.send("inputchange:"+self.trigger+":on")
             gui.change_input_state(self.trigger, 1)
             for i in self.who:
-                GPIO.output(int(i), 1)
+                outputs[i].output(1)
                 gui.change_output_state(i, 0)
             GPIO.wait_for_edge(int(self.trigger), GPIO.FALLING)
             conn.send("inputchange:"+self.trigger+":off")
@@ -221,7 +228,7 @@ class event(object):
             conn.send("inputchange:"+self.trigger+":on")
             gui.change_input_state(self.trigger, 1)
             for i in self.who:
-                GPIO.output(int(i), 0)
+                outputs[i].output(0)
                 gui.change_output_state(i, 1)
             GPIO.wait_for_edge(int(self.trigger), GPIO.FALLING)
             conn.send("inputchange:"+self.trigger+":off")
@@ -254,7 +261,7 @@ class event(object):
             nowtime = time.strftime("%I:%M %p", time.localtime())
             if self.trigger == nowtime:
                 for i in self.who:
-                    GPIO.output(int(i), 0)
+                    outputs[i].output(0)
                     gui.change_output_state(i, 1)
             time.sleep(60)
             
@@ -263,7 +270,7 @@ class event(object):
             nowtime = time.strftime("%I:%M %p", time.localtime())
             if self.trigger == nowtime:
                 for i in self.who:
-                    GPIO.output(int(i), 1)
+                    outputs[i].output(1)
                     gui.change_output_state(i, 0)
             time.sleep(60)
     
@@ -293,53 +300,58 @@ class gpio(object):
     keep_piping = True
     manual_on = False
     event_id = None
+    idling = False
+    mcp = False
     
-    def __init__(self, pin, name, direction):
-        self.pin = int(pin)
+    def __init__(self, pin, name, in_type, direction):
         self.name = name
         self.state = 0
         self.direction = direction
-        if direction == "out":
-            thread.start_new_thread(self.identify, ())
-            pass
         if(direction == "out"):
-            GPIO.setup(int(pin), GPIO.OUT)
+            if "mcp" in pin:
+                gui.console("Setting up MCP23017 pin")
+                self.mcp = True
+                self.pin = int(pin[3:])
+                mcp.config(self.pin, mcp.OUTPUT)
+            else:
+                self.pin = int(pin)
+                GPIO.setup(int(pin), GPIO.OUT)
             gui.add_output(name, pin)
-        elif(direction == "in"):
-            GPIO.setup(int(pin), GPIO.IN)
+            #thread.start_new_thread(self.identify, ())
+        elif direction == "in":
+            self.pin = int(pin)
+            if in_type == "switch":
+                GPIO.setup(int(pin), GPIO.IN, pull_up_down=GPIO.PUD_UP)
+                self.start_input_idle()
+            elif in_type == "motion":
+                GPIO.setup(int(pin), GPIO.IN)
+                self.start_input_idle()
+            elif in_type == "temp":
+                sensors_index['temp'].append(str(self.pin))
+            elif in_type == "light":
+                sensors_index['light'].append(str(self.pin))
+            else:
+                gui.console("Unknown input type for pin "+str(self.pin))
+                return
             gui.add_input(name, pin)
-            self.start_input_idle()
         else:
             gui.console("Failed to setup GPIO!\nUnrecognized direction!")
             return
         gui.console("Setup new GPIO. Pin: " + str(pin) + ", Name: " + name + ", Direction: " + direction)
-        
-    def set_state(self, state):
-        if self.direction == "in":
-            return "This is an input!"
-        if int(state) == 1:
-            if self.state is 1:
-                return "Output already set to on"
-            else:
-                GPIO.output(self.pin, 0)
-                gui.change_output_state(self.pin, 1)
-                self.state = 1
-                return True;
-        elif int(state) == '0':
-            if self.state is 0:
-                return "Output already set to off"
-            else:
-                GPIO.output(self.pin, 1)
-                gui.change_output_state(self.pin, 0)
-                self.state = 0
-                return True
                 
-    def get_state(self):
-        state = GPIO.input(self.pin)
-        if state:
-            return False
+    def input(self):
+        if self.mcp and self.direction == "out":
+            return int(mcp.input(self.pin, check=False))
         else:
-            return True
+            return GPIO.input(self.pin)
+
+    def output(self, value):
+        if self.mcp:
+            gui.change_output_state("mcp"+str(self.pin), not int(value))
+            mcp.output(self.pin, int(value))
+        else:
+            gui.change_output_state(self.pin, value)
+            GPIO.output(self.pin, int(value))
             
     def pipe_listener(self):
         while self.keep_piping:
@@ -351,78 +363,93 @@ class gpio(object):
         self.parent_conn.close()
             
     def start_input_idle(self):
-        self.idling = True
-        self.keep_piping = True
-        self.parent_conn, self.child_conn = Pipe()
-        self.pipe_thread = Thread(target=self.pipe_listener, args=())
-        self.pipe_thread.start()
-        self.idle_process = Process(target=self.input_idle, args=(self.child_conn,))
-        self.idle_process.start()
+        if self.direction == "in":
+            self.idling = True
+            self.keep_piping = True
+            self.parent_conn, self.child_conn = Pipe()
+            self.pipe_thread = Thread(target=self.pipe_listener, args=())
+            self.pipe_thread.start()
+            self.idle_process = Process(target=self.input_idle, args=(self.child_conn,))
+            self.idle_process.start()
+        else:
+            gui.console("Tried to start idle process on an output!")
         
     def stop_input_idle(self):
         self.idling = False
         self.keep_piping = False
         time.sleep(0.1)
-        self.idle_process.terminate()
-        self.idle_process = None
-        self.pipe_thread = None
-        self.parent_conn = None
-        self.child_conn = None
+        if not self.idle_process is None:
+            self.idle_process.terminate()
+            self.idle_process = None
+            self.pipe_thread = None
+            self.parent_conn = None
+            self.child_conn = None
         
     def input_idle(self, conn):
+        goahead = True
+        goahead1 = True
         while True:
-            GPIO.wait_for_edge(self.pin, GPIO.RISING)
-            conn.send("inputchange:"+str(self.pin)+":on")
-            gui.change_input_state(self.pin, 1)
-            GPIO.wait_for_edge(self.pin, GPIO.FALLING)
-            conn.send("inputchange:"+str(self.pin)+":off")
-            gui.change_input_state(self.pin, 0)
-        
-    def change_direction(self):
-        if self.direction == "in":
-            GPIO.setup(self.pin, GPIO.OUT)
-            print "Pin changed dir"
-       
-    def waitforinput(self):
-        if self.direction == "in":
-            GPIO.wait_for_edge(self.pin, GPIO.BOTH)
-        else:
-            return "This is an output!"
+            if goahead:
+                try:
+                    GPIO.wait_for_edge(self.pin, GPIO.RISING)
+                    conn.send("inputchange:"+str(self.pin)+":on")
+                    gui.change_input_state(self.pin, 1)
+                    goahead1 = True
+                except RuntimeError:
+                    goahead1 = False
+                    time.sleep(0.5)
+            if goahead1:
+                try:
+                    GPIO.wait_for_edge(self.pin, GPIO.FALLING)
+                    conn.send("inputchange:"+str(self.pin)+":off")
+                    gui.change_input_state(self.pin, 0)
+                    goahead = True
+                except RuntimeError:
+                    goahead = False
+                    time.sleep(0.5)
                 
     def identify(self):
-        GPIO.output(self.pin, 1)
+        self.output(1)
         time.sleep(0.5)
-        GPIO.output(self.pin, 0)
+        self.output(0)
         time.sleep(0.5)
-        GPIO.output(self.pin, 1)
+        self.output(1)
         time.sleep(0.5)
-        GPIO.output(self.pin, 0)
+        self.output(0)
         time.sleep(0.5)
-        GPIO.output(self.pin, 1)
+        self.output(1)
+
+    def flash(self):
+        while True:
+            self.output(1)
+            time.sleep(0.5)
+            self.output(0)
+            time.sleep(0.5)
         
-    def toggle(self, clients):
-        if self.get_state() == 1:
-            GPIO.output(self.pin, 1)
-            gui.change_output_state(self.pin, 0)
+    def toggle(self):
+        if self.input() == 0:
+            self.output(1)
             self.state = 0
             self.manual_on = False
             for i in clients:
-                i.write_message("pinchange:"+str(self.pin)+":off")
-            return True;
-        elif self.get_state() == 0:
-            GPIO.output(self.pin, 0)
-            gui.change_output_state(self.pin, 1)
+                if self.mcp:
+                    i.write_message("pinchange:mcp"+str(self.pin)+":off")
+                else:
+                    i.write_message("pinchange:"+str(self.pin)+":off")
+            return True
+        elif self.input() == 1:
+            self.output(0)
             self.manual_on = True
             self.state = 1
             for i in clients:
-                i.write_message("pinchange:"+str(self.pin)+":on")
-            return True;
-            
-    def wait_for_input_tohigh(self):
-        GPIO.wait_for_edge(self.pin, GPIO.RISING)
-     
-    def wait_for_input_tolow(self):
-        GPIO.wait_for_edge(self.pin, GPIO.FALLING)
+                if self.mcp:
+                    i.write_message("pinchange:mcp"+str(self.pin)+":on")
+                else:
+                    i.write_message("pinchange:"+str(self.pin)+":on")
+            return True
+        else:
+            for i in clients:
+                i.write_message("error:Bad toggle on pin "+str(self.pin)+". MCP? "+str(self.mcp)+" State: "+str(self.input()))
         
 
 class security(object):
@@ -435,6 +462,7 @@ class security(object):
     tripped = False
     trip_zones = []
     trip_running = False
+    alarm_process = {}
     
     def __init__(self):
         pass
@@ -473,6 +501,10 @@ class security(object):
         for i in self.watchdog_process:
             self.watchdog_process[i].terminate()
         self.watchdog_process = {}
+        if not self.alarm_process == {}:
+            for i in self.alarm_process:
+                self.alarm_process[i].terminate()
+            self.alarm_process = {}
         for i in self.zonedata:
             if inputs[int(i['pin'])].event_id == None:
                 inputs[int(i['pin'])].start_input_idle()
@@ -509,7 +541,113 @@ class security(object):
             n = n - 1
             time.sleep(1)
         gui.console("Bang")
+        for i in outputs:
+            self.alarm_process[str(outputs[i].pin)] = Process(target=outputs[i].flash(), args=())
+            self.alarm_process[str(outputs[i].pin)].start()
             
     def watchdog(self, conn, pin, name):
         GPIO.wait_for_edge(int(pin), GPIO.RISING)
         conn.send("zonetrip:"+name)
+
+    def addcamera(self, name, camera_type, camera_address, camera_username, camera_password):
+        cur.execute("""INSERT INTO security_cameras VALUES (NULL,%s,NULL,%s,%s,%s,%s)""",(name, camera_type, camera_address, camera_username, camera_password))
+        con.commit()
+        cur.execute("SELECT id FROM security_cameras WHERE name = '"+name+"'")
+        camera_id = cur.fetchone()
+        address = 8080 + int(camera_id['id'])
+        gui.console(str(address))
+        with open("/etc/motion/motion.conf", "a") as motionconf:
+            motionconf.write("\nthread /etc/motion/thread"+str(camera_id['id'])+".conf")
+        with open("/etc/motion/thread"+str(camera_id['id'])+".conf", "a") as cameraconf:
+            if camera_type == "usb":
+                cameraconf.write("videodevice /dev/video1\ntext_left "+name+"\ntarget_dir /usr/share/nginx/www/cams/"+name+"\nwebcam_port "+str(address))
+        os.makedirs("/usr/share/nginx/www/cams/"+name)
+        cur.execute("SELECT value FROM settings WHERE field = 'motion_server'")
+        server = cur.fetchone()
+        cur.execute("UPDATE security_cameras SET server_address = '"+server['value']+":"+str(address)+"' WHERE id = '"+str(camera_id['id'])+"'")
+        con.commit()
+        os.system("service motion restart")
+        for i in clients:
+            i.write_message("refreshpage:")
+        gui.gb.screen.refresh()
+
+    def removecamera(self, id):
+        cur.execute("DELETE FROM security_cameras WHERE id = '"+str(id)+"'")
+        con.commit()
+        os.remove("/etc/motion/thread"+str(id)+".conf")
+        f = open("/etc/motion/motion.conf","r")
+        lines = f.readlines()
+        f.close()
+        f = open("/etc/motion/motion.conf","w")
+        for line in lines:
+            if line!="thread /etc/motion/thread"+str(id)+".conf":
+                f.write(line)
+        f.close()
+        os.system("service motion restart")
+        gui.gb.screen.refresh()
+
+class sensors(object):
+
+    def __init__(self):
+        self.temp_process = Process(target=self.record_temp_to_database, args=())
+        self.temp_process.start()
+
+    def record_temp_to_database(self):
+        gui.console("Started temperature recording process")
+        cur.execute("SELECT value FROM settings WHERE field = 'temp_interval'")
+        interval = cur.fetchone()
+        count = 0
+        while True:
+            if int(count) == int(interval['value']):
+                gui.console("Recording current temperatures to database")
+                temp = self.get_temperature()
+                cur.execute("""INSERT INTO temperature_records VALUES (NULL,%s,%s,now())""",(sensors_index['temp'][0],temp))
+                con.commit()
+                count = 0
+            time.sleep(60)
+            count = count + 1
+
+    def get_temperature(self, sensor_index = 0):
+        try:
+            sensors_index['temp'][sensor_index]
+        except IndexError:
+            return "No sensor"
+        temp = False
+        while not temp:
+            cur.execute("SELECT type_args FROM inputs WHERE pin = '"+sensors_index['temp'][sensor_index]+"'")
+            stype = cur.fetchone()
+            output = subprocess.check_output(["./utils/env-sensor", stype['type_args'], sensors_index['temp'][sensor_index]])
+            matches = re.search("Temp =\s+([0-9.]+)", output)
+            if (not matches):
+                continue
+            else:
+                temp = float(matches.group(1))
+                temp = ((temp * 9) / 5) + 32
+                tempdec = str(temp).split('.')
+                if float(tempdec[1]) >= 5:
+                    tempdec[0] = float(tempdec[0]) + 1
+                return str(tempdec[0])
+
+    def get_humidity(self, sensor_index = 0):
+        try:
+            sensors_index['temp'][sensor_index]
+        except IndexError:
+            return "No sensor"
+        humid = False
+        while not humid:
+            cur.execute("SELECT type_args FROM inputs WHERE pin = '"+sensors_index['temp'][sensor_index]+"'")
+            stype = cur.fetchone()
+            output = subprocess.check_output(["./utils/env-sensor", stype['type_args'], sensors_index['temp'][sensor_index]])
+            matches = re.search("Hum =\s+([0-9.]+)", output)
+            if (not matches):
+                continue
+            else:
+                humid = float(matches.group(1))
+                return str(humid)
+
+    def get_light_level(self):
+        try:
+            pin = sensors_index['light'][0]
+        except IndexError:
+            return "No sensor"
+        return subprocess.check_output(["python", "./utils/light.py", pin])

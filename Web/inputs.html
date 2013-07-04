@@ -65,6 +65,7 @@
     <script type="text/javascript" src="js/controls/wysiwyg.link.js"></script>
     <script type="text/javascript" src="js/controls/wysiwyg.table.js"></script>
     <script type="text/javascript" src="js/plugins/wysiwyg.rmFormat.js"></script>
+    <script type="text/javascript" src="js/jquery.cookie.js"></script>
     <script type="text/javascript" src="js/costum.js"></script>
     <script type="text/javascript" src="homeremote.js"></script>
 
@@ -82,15 +83,16 @@
             <li><a href="temperature.html">Temperature</a></li>
             <li class="active"><a href="inputs.html">Inputs</a></li>
             <li><a href="events.html">Events</a></li>
+            <li><a href="settings.html">Settings</a></li>
         </ul>
     </div>
     <div id="right">
 
         <div id="top-bar">
             <ul>
-                <li>Welcome, John Do</li>
+                <li id="user-name"></li>
                 <li><a href="#"><img src="gfx/icon-settings.png" alt="Settings" /> Settings</a></li>
-                <li><a href="#"><img src="gfx/icon-logout.png" alt="Logout" /> Logout</a></li>
+                <li><a href="data/auth.php?action=logout"><img src="gfx/icon-logout.png" alt="Logout" /> Logout</a></li>
             </ul>
         </div>
 
@@ -110,7 +112,7 @@
                         <div class="hide"></div>
                     </div>
                     <div class="content nopadding" style="display: none">
-                        <form>
+                        <form id="new-input-form">
                             <div class="row">
                                 <label>Name</label>
                                 <div class="rowright">
@@ -123,12 +125,14 @@
                                     <input id="new-input-pin" type="text">
                                 </div>
                             </div>
-                            <div class="row">
+                            <div class="row" id="input-type-row">
                                 <label>Input Type</label>
                                 <div class="rowright">
                                     <select id="new-input-type">
                                         <option value="motion">Motion Sensor</option>
-                                        <option value="door">Door Sensor</option>
+                                        <option value="switch">Switch</option>
+                                        <option value="temp">Temperature/Humidity</option>
+                                        <option value="light">Light</option>
                                     </select>
                                 </div>
                             </div>

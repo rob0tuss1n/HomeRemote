@@ -64,10 +64,9 @@
     <script type="text/javascript" src="js/controls/wysiwyg.image.js"></script>
     <script type="text/javascript" src="js/controls/wysiwyg.link.js"></script>
     <script type="text/javascript" src="js/controls/wysiwyg.table.js"></script>
-    <script type="text/javascript" src="js/jquery.cookie.js"></script>
     <script type="text/javascript" src="js/plugins/wysiwyg.rmFormat.js"></script>
+    <script type="text/javascript" src="js/jquery.cookie.js"></script>
     <script type="text/javascript" src="js/costum.js"></script>
-    <script type="text/javascript" src="imageviewer.js"></script>
     <script type="text/javascript" src="homeremote.js"></script>
 
 </head>
@@ -80,9 +79,9 @@
         <ul>
             <li><a href="dashboard.html">Home</a></li>
             <li><a href="lights.html">Lights</a></li>
-            <li class="active"><a href="security.html">Secutiry</a></li>
+            <li><a href="security.html">Secutiry</a></li>
             <li><a href="temperature.html">Temperature</a></li>
-            <li><a href="inputs.html">Inputs</a></li>
+            <li class="active"><a href="inputs.html">Inputs</a></li>
             <li><a href="events.html">Events</a></li>
             <li><a href="settings.html">Settings</a></li>
         </ul>
@@ -100,7 +99,8 @@
         <div id="breadcrumbs">
             <ul>
                 <li><a>Login</a></li>
-                <li class="active"><a href="#">Security</a></li>
+                <li><a href="#">Settings</a></li>
+                <li class="active">Monitor</li>
             </ul>
         </div>
 
@@ -109,76 +109,26 @@
             <div class="section">
                 <div class="box">
                     <div class="title">
-                        <h2>Add Zone</h2>
-                        <div class="hide"></div>
-                    </div>
-                    <div class="content nopadding" style="display: none">
-                        <form id="new-zone-form">
-                            <div class="row">
-                                <label>Name</label>
-                                <div class="rowright">
-                                    <input id="new-zone-name" type="text">
-                                </div>
-                            </div>
-                            <div class="row">
-                                <label>Input</label>
-                                <div class="rowright">
-                                    <input id="new-zone-name" type="text">
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-
-            <div class="section">
-                <div class="box">
-                    <div class="title">
-                        <h2>Security Status</h2>
+                        <h2>System Monitoring</h2>
                         <div class="hide"></div>
                     </div>
                     <div class="content">
                         <table cellspacing="0" cellpadding="0" border="0">
                             <thead>
                             <tr>
-                                <th>Arm/Disarm System</th>
-                                <th width="33%"></th>
-                                <th width="33%"></th>
+                                <th>Input</th>
+                                <th width="25px"></th>
+                                <th width="15px"></th>
                             </tr>
                             </thead>
-                            <tbody>
-                                <tr>
-                                    <td colspan="3" style="text-align: center;">Current Status: <span id="security-overview"></span></td>
-                                </tr>
-                                <tr>
-                                    <td style="text-align: center"><button class="medium green" onclick="armAway()"><span>Arm Away</span></button></td>
-                                    <td style="text-align: center"><button class="medium green" onclick="armNight()"><span>Arm Night</span></button></td>
-                                    <td style="text-align: center"><button class="medium red" onclick="disarm()"><span>Disarm</span></button></td>
-                                </tr>
+                            <tbody id="inputlist">
                             </tbody>
                         </table>
                     </div>
                 </div>
             </div>
-
-            <div class="section">
-                <div class="box">
-                    <div class="title">
-                        <h2>Camera Feeds</h2>
-                        <div class="hide"></div>
-                    </div>
-                    <div id="camerafeeds" class="content">
-
-                    </div>
-                </div>
-            </div>
         </div>
     </div>
-</div>
-<div id="gallery" title="Motion Snapshots" align="center">
-    <p id="name"></p>
-    <img id="image-view">
-    <span><a style="cursor: pointer" onclick="lastSnapshot()">Last</a></span><span><a style="cursor: pointer" onclick="nextSnapshot()">-Next</a></span>
 </div>
 
 

@@ -2,18 +2,22 @@ import curses
 import time
 import sys
 
+no_output = False
 
 class gb(object):
+    screen = None
     output_objs = {}
     input_objs = {}
     event_objs = {}
     outputs_win = None
     inputs_win = None
     events_win = None
+    console_win = None
     console_win_sub = None
     console_win_sub_size = None
     obj_line_length = None
     nocolor = False
+    usegui = False
     
 def start(): 
     gb.screen = curses.initscr()
@@ -60,119 +64,137 @@ def start():
     
     outputlines = gb.outputs_win.getmaxyx()
     gb.obj_line_length = outputlines[1] - 2
-    i = 1;
+    i = 1
     while not i == outputlines[0] - 2:
         gb.output_objs[i] = "%empty"
         gb.input_objs[i] = "%empty"
         gb.event_objs[i] = "%empty"
         i = i + 1
+    gb.usegui = True
                 
 def console(string):
-    gb.console_win_sub.scroll(1)
-    gb.console_win_sub.addstr(gb.console_win_sub_size[0] - 2, 0, str(string))
-    gb.console_win_sub.refresh()
+    if gb.usegui:
+        gb.console_win_sub.scroll(1)
+        gb.console_win_sub.addstr(gb.console_win_sub_size[0] - 2, 0, str(string))
+        gb.console_win_sub.refresh()
+    elif not no_output:
+        print string
     
 def add_output(name, pin):
-    for i in gb.output_objs:
-        if gb.output_objs[i] == "%empty":
-            gb.outputs_win.addstr(i, 1, name)
-            if gb.nocolor:
-                gb.outputs_win.chgat(i, gb.obj_line_length, 1, curses.A_REVERSE)
-            else:
-                gb.outputs_win.addstr(i, gb.obj_line_length, " ", curses.color_pair(1))
-            gb.outputs_win.refresh()
-            gb.output_objs[i] = int(pin)
-            break
-                
-def remove_output(pin):
-    for i in gb.output_objs:
-        if gb.output_objs[i] == int(pin):
-            gb.output_objs[i] = "%empty"
-            gb.outputs_win.addstr(i, 1, " "*gb.obj_line_length)
-            gb.outputs_win.refresh()
-            break
-                
-def change_output_state(pin, state):
-    for i in gb.output_objs:
-        if gb.output_objs[i] == int(pin):
-            if state == 0:
+    if gb.usegui:
+        for i in gb.output_objs:
+            if gb.output_objs[i] == "%empty":
+                gb.outputs_win.addstr(i, 1, name)
                 if gb.nocolor:
                     gb.outputs_win.chgat(i, gb.obj_line_length, 1, curses.A_REVERSE)
                 else:
                     gb.outputs_win.addstr(i, gb.obj_line_length, " ", curses.color_pair(1))
-            elif state == 1:
-                if gb.nocolor:
-                    gb.outputs_win.chgat(i, gb.obj_line_length, 1, curses.A_REVERSE)
-                else:
-                    gb.outputs_win.addstr(i, gb.obj_line_length, " ", curses.color_pair(2))
-            gb.outputs_win.refresh()
-            break
+                gb.outputs_win.refresh()
+                gb.output_objs[i] = str(pin)
+                break
+                
+def remove_output(pin):
+    if gb.usegui:
+        for i in gb.output_objs:
+            if gb.output_objs[i] == str(pin):
+                gb.output_objs[i] = "%empty"
+                gb.outputs_win.addstr(i, 1, " "*gb.obj_line_length)
+                gb.outputs_win.refresh()
+                break
+                
+def change_output_state(pin, state):
+    if gb.usegui:
+        for i in gb.output_objs:
+            if gb.output_objs[i] == str(pin):
+                if state == 0:
+                    if gb.nocolor:
+                        gb.outputs_win.chgat(i, gb.obj_line_length, 1, curses.A_REVERSE)
+                    else:
+                        gb.outputs_win.addstr(i, gb.obj_line_length, " ", curses.color_pair(1))
+                elif state == 1:
+                    if gb.nocolor:
+                        gb.outputs_win.chgat(i, gb.obj_line_length, 1, curses.A_REVERSE)
+                    else:
+                        gb.outputs_win.addstr(i, gb.obj_line_length, " ", curses.color_pair(2))
+                gb.outputs_win.refresh()
+                break
             
 def add_input(name, pin):
-    for i in gb.input_objs:
-        if gb.input_objs[i] == "%empty":
-            gb.inputs_win.addstr(i, 1, name)
-            gb.inputs_win.addstr(i, gb.obj_line_length, " ", curses.color_pair(1))
-            gb.inputs_win.refresh()
-            gb.input_objs[i] = int(pin)
-            break
+    if gb.usegui:
+        for i in gb.input_objs:
+            if gb.input_objs[i] == "%empty":
+                gb.inputs_win.addstr(i, 1, name)
+                gb.inputs_win.addstr(i, gb.obj_line_length, " ", curses.color_pair(1))
+                gb.inputs_win.refresh()
+                gb.input_objs[i] = int(pin)
+                break
         
 def remove_input(pin):
-    for i in gb.input_objs:
-        if gb.input_objs[i] == int(pin):
-            gb.input_objs[i] = "%empty"
-            gb.inputs_win.addstr(i, 1, " "*gb.obj_line_length)
-            gb.inputs_win.refresh()
-            break
+    if gb.usegui:
+        for i in gb.input_objs:
+            if gb.input_objs[i] == int(pin):
+                gb.input_objs[i] = "%empty"
+                gb.inputs_win.addstr(i, 1, " "*gb.obj_line_length)
+                gb.inputs_win.refresh()
+                break
         
 def change_input_state(pin, state):
-    for i in gb.input_objs:
-        if gb.input_objs[i] == int(pin):
-            if state == 0:
-                if gb.nocolor:
-                    gb.inputs_win.chgat(i, gb.obj_line_length, 1, curses.A_REVERSE)
-                else:
-                    gb.inputs_win.addstr(i, gb.obj_line_length, " ", curses.color_pair(1))
-            elif state == 1:
-                if gb.nocolor:
-                    gb.inputs_win.chgat(i, gb.obj_line_length, 1, curses.A_REVERSE)
-                else:
-                    gb.inputs_win.addstr(i, gb.obj_line_length, " ", curses.color_pair(2))
-            gb.inputs_win.refresh()
-            break
+    if gb.usegui:
+        for i in gb.input_objs:
+            if gb.input_objs[i] == int(pin):
+                if state == 0:
+                    if gb.nocolor:
+                        gb.inputs_win.chgat(i, gb.obj_line_length, 1, curses.A_REVERSE)
+                    else:
+                        gb.inputs_win.addstr(i, gb.obj_line_length, " ", curses.color_pair(1))
+                elif state == 1:
+                    if gb.nocolor:
+                        gb.inputs_win.chgat(i, gb.obj_line_length, 1, curses.A_REVERSE)
+                    else:
+                        gb.inputs_win.addstr(i, gb.obj_line_length, " ", curses.color_pair(2))
+                gb.inputs_win.refresh()
+                gb.outputs_win.refresh()
+                gb.console_win.refresh()
+                gb.console_win_sub.refresh()
+                gb.screen.refresh()
+                break
         
 def add_event(name, id):
-    for i in gb.event_objs:
-        if gb.event_objs[i] == "%empty":
-            gb.events_win.addstr(i, 1, name)
-            gb.events_win.addstr(i, gb.obj_line_length, " ", curses.color_pair(1))
-            gb.events_win.refresh()
-            gb.event_objs[i] = int(id)
-            break
+    if gb.usegui:
+        for i in gb.event_objs:
+            if gb.event_objs[i] == "%empty":
+                gb.events_win.addstr(i, 1, name)
+                gb.events_win.addstr(i, gb.obj_line_length, " ", curses.color_pair(1))
+                gb.events_win.refresh()
+                gb.event_objs[i] = int(id)
+                break
         
 def remove_event(id):
-    for i in gb.event_objs:
-        if gb.event_objs[i] == int(id):
-            gb.event_objs[i] = "%empty"
-            gb.events_win.addstr(i, 1, " "*gb.obj_line_length)
-            gb.events_win.refresh()
-            break
+    if gb.usegui:
+        for i in gb.event_objs:
+            if gb.event_objs[i] == int(id):
+                gb.event_objs[i] = "%empty"
+                gb.events_win.addstr(i, 1, " "*gb.obj_line_length)
+                gb.events_win.refresh()
+                break
         
 def change_event_state(id, state):
-    for i in gb.event_objs:
-        if gb.event_objs[i] == int(id):
-            if state == 0:
-                if gb.nocolor:
-                    gb.events_win.chgat(i, gb.obj_line_length, 1, curses.A_REVERSE)
-                else:
-                    gb.events_win.addstr(i, gb.obj_line_length, " ", curses.color_pair(1))
-            elif state == 1:
-                if gb.nocolor:
-                    gb.events_win.chgat(i, gb.obj_line_length, 1, curses.A_REVERSE)
-                else:
-                    gb.events_win.addstr(i, gb.obj_line_length, " ", curses.color_pair(2))
-            gb.events_win.refresh()
-            break
+    if gb.usegui:
+        for i in gb.event_objs:
+            if gb.event_objs[i] == int(id):
+                if state == 0:
+                    if gb.nocolor:
+                        gb.events_win.chgat(i, gb.obj_line_length, 1, curses.A_REVERSE)
+                    else:
+                        gb.events_win.addstr(i, gb.obj_line_length, " ", curses.color_pair(1))
+                elif state == 1:
+                    if gb.nocolor:
+                        gb.events_win.chgat(i, gb.obj_line_length, 1, curses.A_REVERSE)
+                    else:
+                        gb.events_win.addstr(i, gb.obj_line_length, " ", curses.color_pair(2))
+                gb.events_win.refresh()
+                break
             
 def end():
-    curses.endwin()
+    if gb.usegui:
+        curses.endwin()

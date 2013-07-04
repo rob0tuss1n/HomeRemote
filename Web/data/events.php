@@ -2,7 +2,7 @@
 require_once 'settings.php';
 
 function getEvents() {
-    $eventquery = mysql_query("SELECT * FROM events1");
+    $eventquery = mysql_query("SELECT * FROM events");
     $data = array();
     while($row = mysql_fetch_assoc($eventquery)) {
         $data[] = $row;

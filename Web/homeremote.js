@@ -1,12 +1,21 @@
-var ws, page = $(location).attr('pathname'), color, remcolor, selector;
+var ws, args, page = $(location).attr('pathname'), color, remcolor, selector, url = $(location).attr("host");
+$.get("data/auth.php?action=checkauth", function(data) {
+    if(data == "false") {
+        window.location.replace = url;
+    } else {
+        $("#user-name").html("Welcome, "+data);
+    }
+});
 $(document).ready(function() {
-    ws = new WebSocket('ws://192.168.1.68:9000/');
+    ws = new WebSocket('ws://joey.myds.me:9000/');
     ws.onopen = function() {
         ws.send("declarepins:");
         ws.send("declareevents:");
         ws.send("securitystatus:");
+        ws.send("gettemp:");
     };
     ws.onmessage = function(e) {
+        console.log(e.data)
         args = e.data.split(":");
         if(args[0] == "error") {
             alert("Error: "+args[1]);
@@ -44,11 +53,15 @@ $(document).ready(function() {
             selector.find("button").removeClass(remcolor);
             selector.find("button").addClass(color);
         } else if(args[0] == "securitystatus") {
+            var selector = $("#security-overview")
             if(args[1] == "armed") {
-                $("#security-overview").html("System <b>armed</b> in "+args[2]+" mode");
+                selector.html("System <b>armed</b> in "+args[2]+" mode");
             } else {
-                $("#security-overview").html("System <b>disarmed</b>")
+                selector.html("System <b>disarmed</b>")
             }
+            $.get("data/system.php?action=getmotionstatus", function(data) {
+                selector.html(selector.html()+", "+data);
+            });
         }
         if(args[0] == "deletelight") {
             $("tr[data-pin='"+args[1]+"']").remove();
@@ -60,6 +73,14 @@ $(document).ready(function() {
             $("tr[data-eventid='"+args[1]+"']").remove();
         } else if(args[0] == "deleteinput") {
             $("tr[data-inputpin='"+args[1]+"']").remove();
+        } else if(args[0] == "alarmtrip") {
+            alert("BURGLER ALARM HAS BEEN TRIPPED!");
+        } else if(args[0] == "refreshpage") {
+            location.reload();
+        } else if(args[0] == "temperature") {
+            $("#indoor-temp").html(args[1]+"&deg; F");
+        } else if(args[0] == "lightlevel") {
+            console.log("Light level: "+args[1])
         }
     };
     if(page == "/dashboard.html") {
@@ -132,7 +153,36 @@ $(document).ready(function() {
                 var html = '<tr class="input" data-inputpin="'+ v.pin+'"><td>'+ v.name+'</td><td><button class="small red"><span>Status</span></button></td><td><a href="#" onclick="deleteInput('+ v.pin+')"><img src="gfx/icon-delete.gif"></a></td></tr>';
                 $(html).appendTo($("#inputlist"));
             })
+        });
+        $("#new-input-type").selectBox().change(function() {
+            if($(this).val() == "temp") {
+                $("#input-type-row").after($('<div id="temp-type" class="row"><label>Light sensor type</label><div class="rowright"><select id="light-sensor-type"><option value="11">DHT11</option><option value="22">DHT22</option><option value="2302">AM2302</option></select></div></div>'));
+                $("#light-sensor-type").selectBox();
+            } else {
+                $("#temp-type").remove();
+            }
         })
+    } else if(page == "/security.html") {
+        $.get("data/security.php?action=getcamerafeeds", function(data) {
+            feeds = JSON.parse(data);
+            $.each(feeds, function(k, v) {
+                var html = '<div onclick="imageviewer('+"'"+ v.name +"'"+')" class="camera-feed" style="width: 640px; height: 500px; text-align: center;"><span style="text-align: center; cursor: pointer;"><b>'+ v.name +'</b></span><br><iframe style="border: none;" src="http://'+ v.server_address +'" width="640" height="480"></iframe></div>';
+                $(html).appendTo($("#camerafeeds"));
+            })
+        });
+        $.get("eventforms.php?part=zone", function(data) {
+            $(data).appendTo($("#new-zone-form"));
+            $("#camera").selectBox();
+            $("#input").selectBox();
+        });
+    } else if(page == "/temperature.html") {
+        $.get("data/temperature.php?action=get24hdata", function(data) {
+            temps = JSON.parse(data);
+            $.each(temps, function(k,v) {
+                var html = '<tr><th>'+ v.date +'</th><td>'+ v.temp +'</td></tr>'
+                $(html).appendTo($("#temp-history-data"));
+            });
+        });
     }
 });
 
@@ -160,8 +210,11 @@ function deleteEvent(id) {
     ws.send("deleteevent:"+id);
 }
 function addInput() {
-    var name = $("#new-input-name").val(), pin = $("#new-input-pin").val(), type = $("#new-input-type").val();
-    ws.send("newinput:"+name+":"+pin+":"+type);
+    var name = $("#new-input-name").val(), pin = $("#new-input-pin").val(), type = $("#new-input-type").val(), type_args;
+    if(type == "temp") {
+        type_args = $("#light-sensor-type").val();
+    }
+    ws.send("newinput:"+name+":"+pin+":"+type+":"+type_args);
 }
 function deleteInput(pin) {
     ws.send("deleteinput:"+pin);
@@ -178,4 +231,7 @@ function armNight() {
 }
 function disarm() {
     ws.send("disarmalarm:");
+}
+function reloadCam(element, img) {
+
 }

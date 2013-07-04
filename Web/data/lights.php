@@ -2,7 +2,7 @@
 require_once 'settings.php';
 
 function getLights() {
-    $lightquery = mysql_query("SELECT pin,name FROM lights");
+    $lightquery = mysql_query("SELECT pin,name FROM outputs");
     $data = array();
     while($row = mysql_fetch_assoc($lightquery)) {
         $data[] = $row;

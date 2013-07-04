@@ -64,6 +64,7 @@
 	<script type="text/javascript" src="js/controls/wysiwyg.link.js"></script>
 	<script type="text/javascript" src="js/controls/wysiwyg.table.js"></script>
 	<script type="text/javascript" src="js/plugins/wysiwyg.rmFormat.js"></script>
+    <script type="text/javascript" src="js/jquery.cookie.js"></script>
 	<script type="text/javascript" src="js/costum.js"></script>	
 	
 </head>
@@ -91,20 +92,21 @@
 							</div>
 							
 							<div class="tab nopadding" id="tabs-1">
+                                <?php
+                                if(isset($_GET['badlogin'])) {
+                                    echo '<div class="content"><div class="system error">Bad username/password combination</div></div>';
+                                }
+                                ?>
 								<form action="login.php" method="get">
 									<div class="row">
-										<label>Username</label>
-										<div class="rowright"><input type="text" value="" /></div>
+										<label for="username">Username</label>
+										<div class="rowright"><input id="username" name="username" type="text" value="" /></div>
 									</div>
 									<div class="row">
-										<label>Password</label>
-										<div class="rowright"><input type="password" value="" /></div>
+										<label for="password">Password</label>
+										<div class="rowright"><input id="password" name="password" type="password" value="" /></div>
 									</div>
 									<div class="row">
-										<label>
-											<input type="checkbox" name="" value="" id="remember" />
-											<label for="remember">Remember me?</label>
-										</label>
 										<div class="rowright button">
 											<button type="submit" class="medium grey"><span>Login</span></button>
 										</div>

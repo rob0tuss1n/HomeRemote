@@ -10,9 +10,19 @@ function getUnusedInputs() {
     }
     return json_encode($data);
 }
+function getMotionStatus() {
+    if(file_exists("/var/run/motion/motion.pid")) {
+        return "camera server <b>running</b>";
+    } else {
+        return "camera server <b>not running</b>";
+    }
+}
 if($_GET['action'] == "gettime") {
     echo getSysTime();
 }
 elseif($_GET['action'] == "getunusedinputs") {
     echo getUnusedInputs();
+}
+elseif($_GET['action'] == "getmotionstatus") {
+    echo getMotionStatus();
 }

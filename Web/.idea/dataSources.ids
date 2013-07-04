@@ -19,24 +19,39 @@
       </library>
     </libraries>
     <schema name="" catalog="automation"/>
+    <table name="accounts" schema="" catalog="automation" type="TABLE">
+      <column name="id" sqlType="INT" length="10" precision="0" nullable="false" jdbcType="4"/>
+      <column name="name" sqlType="TEXT" length="65535" precision="0" nullable="true" jdbcType="-1"/>
+      <column name="username" sqlType="TEXT" length="65535" precision="0" nullable="true" jdbcType="-1"/>
+      <column name="password" sqlType="TEXT" length="65535" precision="0" nullable="true" jdbcType="-1"/>
+      <column name="sid" sqlType="TEXT" length="65535" precision="0" nullable="true" jdbcType="-1"/>
+      <primary-key name="PRIMARY" columns="id"/>
+    </table>
     <table name="events" schema="" catalog="automation" type="TABLE">
       <column name="id" sqlType="INT" length="10" precision="0" nullable="false" jdbcType="4" autoIncrement="true"/>
       <column name="name" sqlType="TEXT" length="65535" precision="0" nullable="true" jdbcType="-1"/>
-      <column name="who" sqlType="TEXT" length="65535" precision="0" nullable="true" jdbcType="-1"/>
       <column name="action" sqlType="TEXT" length="65535" precision="0" nullable="true" jdbcType="-1"/>
-      <column name="when" sqlType="TEXT" length="65535" precision="0" nullable="true" jdbcType="-1"/>
-      <column name="when_targets" sqlType="TEXT" length="65535" precision="0" nullable="true" jdbcType="-1"/>
-      <column name="timeout" sqlType="INT" length="10" precision="0" nullable="true" jdbcType="4"/>
+      <column name="who" sqlType="TEXT" length="65535" precision="0" nullable="true" jdbcType="-1"/>
+      <column name="trigger" sqlType="TEXT" length="65535" precision="0" nullable="true" jdbcType="-1"/>
+      <column name="trigger_args" sqlType="TEXT" length="65535" precision="0" nullable="true" jdbcType="-1"/>
+      <column name="timeout" sqlType="TEXT" length="65535" precision="0" nullable="true" jdbcType="-1"/>
       <primary-key name="PRIMARY" columns="id"/>
+    </table>
+    <table name="helper_processes" schema="" catalog="automation" type="TABLE">
+      <column name="pid" sqlType="INT" length="10" precision="0" nullable="false" jdbcType="4"/>
+      <column name="type" sqlType="TEXT" length="65535" precision="0" nullable="true" jdbcType="-1"/>
+      <column name="info" sqlType="TEXT" length="65535" precision="0" nullable="true" jdbcType="-1"/>
+      <primary-key name="PRIMARY" columns="pid"/>
     </table>
     <table name="inputs" schema="" catalog="automation" type="TABLE">
       <column name="id" sqlType="INT" length="10" precision="0" nullable="false" jdbcType="4" autoIncrement="true"/>
       <column name="name" sqlType="TEXT" length="65535" precision="0" nullable="true" jdbcType="-1"/>
       <column name="pin" sqlType="INT" length="10" precision="0" nullable="true" jdbcType="4"/>
       <column name="type" sqlType="TEXT" length="65535" precision="0" nullable="false" jdbcType="-1"/>
+      <column name="type_args" sqlType="TEXT" length="65535" precision="0" nullable="true" jdbcType="-1"/>
       <primary-key name="PRIMARY" columns="id"/>
     </table>
-    <table name="lights" schema="" catalog="automation" type="TABLE">
+    <table name="outputs" schema="" catalog="automation" type="TABLE">
       <column name="id" sqlType="INT" length="10" precision="0" nullable="false" jdbcType="4" autoIncrement="true"/>
       <column name="name" sqlType="TEXT" length="65535" precision="0" nullable="true" jdbcType="-1"/>
       <column name="pin" sqlType="INT" length="10" precision="0" nullable="true" jdbcType="4"/>
@@ -48,10 +63,39 @@
       <column name="direction" sqlType="TEXT" length="65535" precision="0" nullable="true" jdbcType="-1"/>
       <primary-key name="PRIMARY" columns="pin"/>
     </table>
+    <table name="security_cameras" schema="" catalog="automation" type="TABLE">
+      <column name="video_device" sqlType="INT" length="10" precision="0" nullable="false" jdbcType="4"/>
+      <column name="name" sqlType="TEXT" length="65535" precision="0" nullable="true" jdbcType="-1"/>
+      <column name="server_address" sqlType="TEXT" length="65535" precision="0" nullable="true" jdbcType="-1"/>
+      <column name="type" sqlType="TEXT" length="65535" precision="0" nullable="true" jdbcType="-1"/>
+      <column name="address" sqlType="TEXT" length="65535" precision="0" nullable="true" jdbcType="-1"/>
+      <column name="username" sqlType="TEXT" length="65535" precision="0" nullable="true" jdbcType="-1"/>
+      <column name="password" sqlType="TEXT" length="65535" precision="0" nullable="true" jdbcType="-1"/>
+      <primary-key name="PRIMARY" columns="video_device"/>
+    </table>
+    <table name="security_zones" schema="" catalog="automation" type="TABLE">
+      <column name="pin" sqlType="INT" length="10" precision="0" nullable="false" jdbcType="4"/>
+      <column name="name" sqlType="TEXT" length="65535" precision="0" nullable="true" jdbcType="-1"/>
+      <primary-key name="PRIMARY" columns="pin"/>
+    </table>
     <table name="settings" schema="" catalog="automation" type="TABLE">
       <column name="id" sqlType="INT" length="10" precision="0" nullable="false" jdbcType="4" autoIncrement="true"/>
       <column name="field" sqlType="TEXT" length="65535" precision="0" nullable="true" jdbcType="-1"/>
       <column name="value" sqlType="TEXT" length="65535" precision="0" nullable="true" jdbcType="-1"/>
+      <primary-key name="PRIMARY" columns="id"/>
+    </table>
+    <table name="system_slaves" schema="" catalog="automation" type="TABLE">
+      <column name="id" sqlType="INT" length="10" precision="0" nullable="false" jdbcType="4" autoIncrement="true"/>
+      <column name="name" sqlType="TEXT" length="65535" precision="0" nullable="true" jdbcType="-1"/>
+      <column name="function" sqlType="TEXT" length="65535" precision="0" nullable="true" jdbcType="-1"/>
+      <column name="address" sqlType="TEXT" length="65535" precision="0" nullable="true" jdbcType="-1"/>
+      <primary-key name="PRIMARY" columns="id"/>
+    </table>
+    <table name="temperature_records" schema="" catalog="automation" type="TABLE">
+      <column name="id" sqlType="INT" length="10" precision="0" nullable="false" jdbcType="4" autoIncrement="true"/>
+      <column name="pin" sqlType="INT" length="10" precision="0" nullable="true" jdbcType="4"/>
+      <column name="temp" sqlType="INT" length="10" precision="0" nullable="true" jdbcType="4"/>
+      <column name="date" sqlType="TIMESTAMP" length="19" precision="0" nullable="true" jdbcType="93"/>
       <primary-key name="PRIMARY" columns="id"/>
     </table>
   </data-source>
