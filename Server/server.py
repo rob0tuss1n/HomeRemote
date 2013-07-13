@@ -18,10 +18,9 @@ import tornado.template
 import gui
 import signal
 import thread
-from remotehome import clients, event, events, inputs, outputs, gpio, security, cur, con, sensors, sensors_index
+from remotehome import clients, event, events, inputs, outputs, gpio, security, cur, con, sensors, sensors_index, nogui
 
 security = security()
-nogui = False
 daemonize = False
 for i in sys.argv:
     if i == "-nogui":
@@ -57,6 +56,7 @@ if __name__ == "__main__":
 sensors = sensors()
 
 class WebSocket(tornado.websocket.WebSocketHandler):
+    # Handle a new web client
     def open(self):
         clients.append(self)
         gui.console("Websocket Opened")
@@ -64,6 +64,7 @@ class WebSocket(tornado.websocket.WebSocketHandler):
     def on_message(self, message):
         gui.console(message)
         args = message.split(":")
+        # Create a new output (pin, name)
         if args[0] == "newoutput":
             if args[1] in outputs:
                 self.write_message("error:GPIO already setup on pin " + args[1])
@@ -74,6 +75,7 @@ class WebSocket(tornado.websocket.WebSocketHandler):
                 for i in clients:
                     i.write_message("addlight:"+args[1]+":"+args[2])
 
+        # Get all outputs that are currently on
         elif args[0] == "getoutputson":
             total = 0
             on = 0
@@ -84,6 +86,7 @@ class WebSocket(tornado.websocket.WebSocketHandler):
                     total = total + 1
             self.write_message("lightoverview:"+str(on)+":"+str(total))
 
+        # Set the state of an output (pin, state)
         elif args[0] == "setoutputstate":
             if args[1] in outputs:
                 res = outputs[args[1]].output(args[2])
@@ -94,25 +97,29 @@ class WebSocket(tornado.websocket.WebSocketHandler):
             else:
                 self.write_message("error:Output does not exist on pin " + args[1])
 
+        # Toggle a pin to the opposite state (pin)
         elif args[0] == "togglepin":
             if args[1] in outputs:
                 res = outputs[args[1]].toggle()
             else:
                 self.write_message("error:Output does not exist on pin " + args[1])
 
+        # Report back the state of pins as if they changed state
         elif args[0] == "declarepins":
             for i in outputs:
-                if outputs[i].input() == 1:
+                gui.console(str(i)+" "+str(outputs[i].input()))
+                if outputs[i].input() == 0:
                     if outputs[i].mcp:
                         self.write_message("pinchange:mcp"+str(outputs[i].pin)+":on")
                     else:
                         self.write_message("pinchange:"+str(outputs[i].pin)+":on")
-                elif outputs[i].input() == 0:
+                elif outputs[i].input() == 1:
                     if outputs[i].mcp:
                         self.write_message("pinchange:mcp"+str(outputs[i].pin)+":off")
                     else:
                         self.write_message("pinchange:"+str(outputs[i].pin)+":off")
-                   
+        
+        # Report back the state of all events as if they changed state
         elif args[0] == "declareevents":
             for i in events:
                 if events[i].event_process != None:
@@ -120,6 +127,7 @@ class WebSocket(tornado.websocket.WebSocketHandler):
                 else:
                     self.write_message("eventchange:"+str(events[i].id)+":off")
                     
+        # Toggle the state of an event
         elif args[0] == "toggleevent":
             args[1] = int(args[1])
             if events[args[1]].event_process != None:
@@ -131,6 +139,7 @@ class WebSocket(tornado.websocket.WebSocketHandler):
                 for i in clients:
                     i.write_message("eventchange:"+str(args[1])+":on")
 
+        # Remove a light from the system
         elif args[0] == "deletelight":
             cur.execute("""DELETE FROM outputs WHERE pin = '%s'""",(int(args[1])))
             con.commit()
@@ -139,6 +148,7 @@ class WebSocket(tornado.websocket.WebSocketHandler):
                 i.write_message("deletelight:"+args[1])
             gui.remove_output(args[1])
                 
+        # Create a new event (name, 
         elif args[0] == "newevent":
             args[5] = args[5].replace("-", ":")
             cur.execute("""INSERT INTO events VALUES (NULL,%s,%s,%s,%s,%s,%s)""",(args[1],args[2], args[3], args[4], args[5], args[6]))
@@ -147,6 +157,7 @@ class WebSocket(tornado.websocket.WebSocketHandler):
             eventdat = cur.fetchone()
             events[eventdat['id']] = event(eventdat['id'], cur)
             
+        # Remove an event from the system
         elif args[0] == "deleteevent":
             events[int(args[1])].stop_event()
             del events[int(args[1])]
@@ -156,6 +167,7 @@ class WebSocket(tornado.websocket.WebSocketHandler):
                 i.write_message("deleteevent:"+args[1])
             gui.remove_event(args[1])
                 
+        # Create a new input (name, pin, type, )
         elif args[0] == "newinput":
             if args[1] in inputs:
                 self.write_message("error:Input already exists on pin "+args[2])
@@ -164,7 +176,8 @@ class WebSocket(tornado.websocket.WebSocketHandler):
                 con.commit()
                 inputs[args[2]] = gpio(args[2], args[1], args[3], "in")
                 #events[int(args[2])] = event(0, True, args[2])
-                
+             
+        # Remove an input from the system   
         elif args[0] == "deleteinput":
             cur.execute("SELECT name FROM events WHERE `trigger` = "+args[1])
             if cur.fetchone():
@@ -178,12 +191,14 @@ class WebSocket(tornado.websocket.WebSocketHandler):
                     i.write_message("deleteinput:"+args[1])
                 gui.remove_input(args[1])
                 
+        # Report back the current state of the security system
         elif args[0] == "securitystatus":
             if security.armed_status:
                 self.write_message("securitystatus:armed:"+security.mode)
             else:
                 self.write_message("securitystatus:disarmed")
                 
+        # Arm the security system in mode (mode)
         elif args[0] == "armalarm":
             thread.start_new_thread(security.arm_system, (args[1],))
             for i in clients:
@@ -210,6 +225,7 @@ class WebSocket(tornado.websocket.WebSocketHandler):
 
 application = tornado.web.Application([(r"/", WebSocket),])
 def signal_handler(signal, frame):
+        # Run all clean-up functions to indicate a safe shutdown
         gui.console('Closing server')
         for i in clients:
             i.close()
@@ -219,6 +235,7 @@ def signal_handler(signal, frame):
             if inputs[i].idling:
                 inputs[i].stop_input_idle()
         sensors.temp_process.terminate()
+        sensors.run_sensor_refresh = False
         GPIO.cleanup()
         gui.end()
         os.remove('lock.pid')

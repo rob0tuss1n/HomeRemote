@@ -18,11 +18,15 @@ mcp = extender.Adafruit_MCP230XX(busnum=1, address=0x20, num_gpios=16)
 
 global clients
 global events
+global nogui
+nogui = False
 clients = []
 events = {}
 outputs = {}
 inputs = {}
 sensors_index = {"light": [], "temp": []}
+temp_sensors = {}
+light_sensors = {}
 
 try:
     con = MySQLdb.connect('localhost', 'root', 'legoman1', 'automation', cursorclass=MySQLdb.cursors.DictCursor)
@@ -153,17 +157,17 @@ class event(object):
         while True:
             GPIO.wait_for_edge(int(self.trigger), GPIO.BOTH)
             conn.send("inputchange:"+str(self.trigger)+":on")
-            gui.change_input_state(str(self.trigger), 1)
+            gui.change_input_state(str(self.trigger), 1, "reg")
             GPIO.wait_for_edge(int(self.trigger), GPIO.BOTH)
             conn.send("inputchange:"+str(self.trigger)+":off")
-            gui.change_input_state(self.trigger, 0)
+            gui.change_input_state(self.trigger, 0, "reg")
             
     def output_toggle_on_input_timeout(self, conn):
         while True:
             alreadyon = []
             GPIO.wait_for_edge(int(self.trigger), GPIO.BOTH)
             conn.send("inputchange:"+str(self.trigger)+":on")
-            gui.change_input_state(int(self.trigger), 1)
+            gui.change_input_state(int(self.trigger), 1, "reg")
             for i in self.who:
                 if outputs[i].input() == 0:
                     alreadyon.append(i)
@@ -178,13 +182,13 @@ class event(object):
                 if GPIO.input(int(self.trigger)):
                     if changed:
                         conn.send("inputchange:"+str(self.trigger)+":on")
-                        gui.change_input_state(int(self.trigger), 1)
+                        gui.change_input_state(int(self.trigger), 1, "reg")
                         changed = False
                     targettime = int(time.time()) + self.timeout - 3
                 else:
                     changed = True
                     conn.send("inputchange:"+str(self.trigger)+":off")
-                    gui.change_input_state(int(self.trigger), 0)
+                    gui.change_input_state(int(self.trigger), 0, "reg")
                 time.sleep(0.2)
             for i in self.who:
                 if not i in alreadyon:
@@ -199,7 +203,7 @@ class event(object):
             alreadyon = []
             GPIO.wait_for_edge(self.trigger, GPIO.RISING)
             conn.send("inputchange:"+str(self.trigger)+":on")
-            gui.change_input_state(self.trigger, 1)
+            gui.change_input_state(self.trigger, 1, "reg")
             for i in self.who:
                 outputs[i].output(state)
                 gui.change_output_state(i, not state)
@@ -208,53 +212,55 @@ class event(object):
                 else:
                     state = 0
             GPIO.wait_for_edge(int(self.trigger), GPIO.FALLING)
-            gui.change_input_state(self.trigger, 0)
+            gui.change_input_state(self.trigger, 0, "reg")
                     
     def output_off_on_input(self, conn):
         while True:
             GPIO.wait_for_edge(int(self.trigger), GPIO.RISING)
             conn.send("inputchange:"+self.trigger+":on")
-            gui.change_input_state(self.trigger, 1)
+            gui.change_input_state(self.trigger, 1, "reg")
             for i in self.who:
                 outputs[i].output(1)
                 gui.change_output_state(i, 0)
             GPIO.wait_for_edge(int(self.trigger), GPIO.FALLING)
             conn.send("inputchange:"+self.trigger+":off")
-            gui.change_input_state(self.trigger, 0)
+            gui.change_input_state(self.trigger, 0, "reg")
          
     def output_on_on_input(self, conn):
         while True:
             GPIO.wait_for_edge(int(self.trigger), GPIO.RISING)
             conn.send("inputchange:"+self.trigger+":on")
-            gui.change_input_state(self.trigger, 1)
+            gui.change_input_state(self.trigger, 1, "reg")
             for i in self.who:
                 outputs[i].output(0)
                 gui.change_output_state(i, 1)
             GPIO.wait_for_edge(int(self.trigger), GPIO.FALLING)
             conn.send("inputchange:"+self.trigger+":off")
+            gui.change_input_state(self.trigger, 0, "reg")
             gui.change_output_state(self.trigger, 0)
             
     def event_enable_on_input(self, conn):
         while True:
             GPIO.wait_for_edge(int(self.trigger), GPIO.RISING)
             conn.send("inputchange:"+self.trigger+":on")
-            gui.change_input_state(self.trigger, 1)
+            gui.change_input_state(self.trigger, 1, "reg")
             conn.send("eventchange:"+self.who+":enable")
             gui.change_event_state(self.who, 1)
             GPIO.wait_for_edge(int(self.trigger), GPIO.FALLING)
             conn.send("inputchange:"+self.trigger+":off")
+            gui.change_input_state(self.trigger, 0, "reg")
             gui.change_event_state(self.trigger, 0)
             
     def event_disable_on_input(self, conn):
         while True:
             GPIO.wait_for_edge(int(self.trigger), GPIO.RISING)
             conn.send("inputchange:"+self.trigger+":on")
-            gui.change_input_state(self.trigger, 1)
+            gui.change_input_state(self.trigger, 1, "reg")
             conn.send("eventchange:"+self.who+":disable")
             gui.change_event_state(self.who, 0)
             GPIO.wait_for_edge(int(self.trigger), GPIO.FALLING)
             conn.send("inputchange:"+self.trigger+":off")
-            gui.change_input_state(self.trigger, 0)
+            gui.change_input_state(self.trigger, 0, "reg")
             
     def output_on_at_time(self, conn):
         while True:
@@ -293,7 +299,6 @@ class event(object):
 
 class gpio(object):
     pin = None
-    state = None
     name = None
     direction = None
     used = False
@@ -305,7 +310,6 @@ class gpio(object):
     
     def __init__(self, pin, name, in_type, direction):
         self.name = name
-        self.state = 0
         self.direction = direction
         if(direction == "out"):
             if "mcp" in pin:
@@ -323,25 +327,32 @@ class gpio(object):
             if in_type == "switch":
                 GPIO.setup(int(pin), GPIO.IN, pull_up_down=GPIO.PUD_UP)
                 self.start_input_idle()
+                gui.add_input(name, pin, "reg")
             elif in_type == "motion":
                 GPIO.setup(int(pin), GPIO.IN)
                 self.start_input_idle()
+                gui.add_input(name, pin, "reg")
             elif in_type == "temp":
-                sensors_index['temp'].append(str(self.pin))
+                sensors_index['temp'].append(str(self.name))
+                temp_sensors[self.name] = str(self.pin)
+                gui.add_input(name, pin, "temp")
             elif in_type == "light":
-                sensors_index['light'].append(str(self.pin))
+                sensors_index['light'].append(str(self.name))
+                light_sensors[self.name] = str(self.pin)
+                gui.add_input(name, pin, "light")
             else:
-                gui.console("Unknown input type for pin "+str(self.pin))
+                gui.console("Failed to setup GPIO: Unknown input type for pin "+str(self.pin))
                 return
-            gui.add_input(name, pin)
         else:
-            gui.console("Failed to setup GPIO!\nUnrecognized direction!")
+            gui.console("Failed to setup GPIO: Unrecognized direction!")
             return
         gui.console("Setup new GPIO. Pin: " + str(pin) + ", Name: " + name + ", Direction: " + direction)
                 
     def input(self):
         if self.mcp and self.direction == "out":
             return int(mcp.input(self.pin, check=False))
+        elif self.direction == "out" and not self.mcp:
+            return GPIO.input(self.pin)
         else:
             return GPIO.input(self.pin)
 
@@ -349,9 +360,17 @@ class gpio(object):
         if self.mcp:
             gui.change_output_state("mcp"+str(self.pin), not int(value))
             mcp.output(self.pin, int(value))
+            for i in clients:
+                i.write_message("pinchange:mcp"+str(self.pin)+":off")
         else:
-            gui.change_output_state(self.pin, value)
+            gui.change_output_state(self.pin, not value)
             GPIO.output(self.pin, int(value))
+            if int(value) == 1:
+                for i in clients:
+                    i.write_message("pinchange:"+str(self.pin)+":on")
+            elif int(value) == 0:
+                for i in clients:
+                    i.write_message("pinchange:"+str(self.pin)+":off")
             
     def pipe_listener(self):
         while self.keep_piping:
@@ -393,7 +412,7 @@ class gpio(object):
                 try:
                     GPIO.wait_for_edge(self.pin, GPIO.RISING)
                     conn.send("inputchange:"+str(self.pin)+":on")
-                    gui.change_input_state(self.pin, 1)
+                    gui.change_input_state(self.pin, 1, "reg")
                     goahead1 = True
                 except RuntimeError:
                     goahead1 = False
@@ -402,7 +421,7 @@ class gpio(object):
                 try:
                     GPIO.wait_for_edge(self.pin, GPIO.FALLING)
                     conn.send("inputchange:"+str(self.pin)+":off")
-                    gui.change_input_state(self.pin, 0)
+                    gui.change_input_state(self.pin, 0, "reg")
                     goahead = True
                 except RuntimeError:
                     goahead = False
@@ -429,18 +448,11 @@ class gpio(object):
     def toggle(self):
         if self.input() == 0:
             self.output(1)
-            self.state = 0
             self.manual_on = False
-            for i in clients:
-                if self.mcp:
-                    i.write_message("pinchange:mcp"+str(self.pin)+":off")
-                else:
-                    i.write_message("pinchange:"+str(self.pin)+":off")
             return True
         elif self.input() == 1:
             self.output(0)
             self.manual_on = True
-            self.state = 1
             for i in clients:
                 if self.mcp:
                     i.write_message("pinchange:mcp"+str(self.pin)+":on")
@@ -587,10 +599,15 @@ class security(object):
         gui.gb.screen.refresh()
 
 class sensors(object):
+    temp = {}
 
     def __init__(self):
         self.temp_process = Process(target=self.record_temp_to_database, args=())
         self.temp_process.start()
+        if not nogui:
+            self.sensor_gui_refresh = Thread(target=self.refresh_gui_sensors, args=())
+            self.run_sensor_refresh = True
+            self.sensor_gui_refresh.start()
 
     def record_temp_to_database(self):
         gui.console("Started temperature recording process")
@@ -600,23 +617,43 @@ class sensors(object):
         while True:
             if int(count) == int(interval['value']):
                 gui.console("Recording current temperatures to database")
-                temp = self.get_temperature()
-                cur.execute("""INSERT INTO temperature_records VALUES (NULL,%s,%s,now())""",(sensors_index['temp'][0],temp))
+                temp = self.temp[sensor_index['temp'][0]]
+                cur.execute("""INSERT INTO temperature_records VALUES (NULL,%s,%s,now())""",(temp_sensors[sensors_index['temp'][0]],temp))
                 con.commit()
                 count = 0
             time.sleep(60)
             count = count + 1
 
-    def get_temperature(self, sensor_index = 0):
-        try:
-            sensors_index['temp'][sensor_index]
-        except IndexError:
-            return "No sensor"
+    def refresh_gui_sensors(self):
+        gui.console("Started sensor gui refresh process")
+        while self.run_sensor_refresh:
+            for i in temp_sensors:
+                temp = self.get_temperature(sensor_name = i, return_cache = False)
+                self.temp[i] = temp
+                gui.change_input_state(temp_sensors[i], temp, "temp")
+            for i in light_sensors:
+                light = self.get_light_level(sensor_name = i)
+                gui.change_input_state(light_sensors[i], light, "light")
+            time.sleep(5)
+
+    def get_temperature(self, sensor_name = None, return_cache = True):
+        if sensor_name != None:
+            try:
+                sensor_pin = temp_sensors[sensor_name]
+            except IndexError:
+                return "No sensor"
+        else:
+            try:
+                sensor_pin = temp_sensors[sensors_index['temp'][0]]
+            except IndexError:
+                return "No sensor"
+        if return_cache == True:
+            return self.temp[sensors_index['temp'][0]]
         temp = False
         while not temp:
-            cur.execute("SELECT type_args FROM inputs WHERE pin = '"+sensors_index['temp'][sensor_index]+"'")
+            cur.execute("SELECT type_args FROM inputs WHERE pin = '"+sensor_pin+"'")
             stype = cur.fetchone()
-            output = subprocess.check_output(["./utils/env-sensor", stype['type_args'], sensors_index['temp'][sensor_index]])
+            output = subprocess.check_output(["./utils/env-sensor", stype['type_args'], sensor_pin])
             matches = re.search("Temp =\s+([0-9.]+)", output)
             if (not matches):
                 continue
@@ -628,16 +665,22 @@ class sensors(object):
                     tempdec[0] = float(tempdec[0]) + 1
                 return str(tempdec[0])
 
-    def get_humidity(self, sensor_index = 0):
-        try:
-            sensors_index['temp'][sensor_index]
-        except IndexError:
-            return "No sensor"
+    def get_humidity(self, sensor_name = None):
+        if sensor_name != None:
+            try:
+                sensor_pin = temp_sensors[sensor_name]
+            except IndexError:
+                return "No sensor"
+        else:
+            try:
+                sensor_pin = temp_sensors[sensors_index['temp'][0]]
+            except IndexError:
+                return "No sensor"
         humid = False
         while not humid:
-            cur.execute("SELECT type_args FROM inputs WHERE pin = '"+sensors_index['temp'][sensor_index]+"'")
+            cur.execute("SELECT type_args FROM inputs WHERE pin = '"+sensor_pin+"'")
             stype = cur.fetchone()
-            output = subprocess.check_output(["./utils/env-sensor", stype['type_args'], sensors_index['temp'][sensor_index]])
+            output = subprocess.check_output(["./utils/env-sensor", stype['type_args'], sensor_pin])
             matches = re.search("Hum =\s+([0-9.]+)", output)
             if (not matches):
                 continue
@@ -645,9 +688,17 @@ class sensors(object):
                 humid = float(matches.group(1))
                 return str(humid)
 
-    def get_light_level(self):
-        try:
-            pin = sensors_index['light'][0]
-        except IndexError:
-            return "No sensor"
-        return subprocess.check_output(["python", "./utils/light.py", pin])
+    def get_light_level(self, sensor_name = None):
+        if sensor_name != None:
+            try:
+                sensor_pin = light_sensors[sensor_name]
+            except IndexError:
+                return "No sensor"
+        else:
+            try:
+                sensor_pin = light_sensors[sensors_index['light'][0]]
+            except IndexError:
+                return "No sensor"
+        output = subprocess.check_output(["python", "./utils/light.py", sensor_pin])
+        output = output.strip(' \t\n\r')
+        return output

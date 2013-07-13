@@ -119,12 +119,17 @@ def change_output_state(pin, state):
                 gb.outputs_win.refresh()
                 break
             
-def add_input(name, pin):
+def add_input(name, pin, input_type):
     if gb.usegui:
         for i in gb.input_objs:
             if gb.input_objs[i] == "%empty":
                 gb.inputs_win.addstr(i, 1, name)
-                gb.inputs_win.addstr(i, gb.obj_line_length, " ", curses.color_pair(1))
+                if input_type == "reg":
+                    gb.inputs_win.addstr(i, gb.obj_line_length, " ", curses.color_pair(1))
+                elif input_type == "temp":
+                    gb.inputs_win.addstr(i, gb.obj_line_length - 2, "000")
+                elif input_type == "light":
+                    gb.inputs_win.addstr(i, gb.obj_line_length - 3, "0000")
                 gb.inputs_win.refresh()
                 gb.input_objs[i] = int(pin)
                 break
@@ -138,20 +143,29 @@ def remove_input(pin):
                 gb.inputs_win.refresh()
                 break
         
-def change_input_state(pin, state):
+def change_input_state(pin, state, input_type):
     if gb.usegui:
         for i in gb.input_objs:
             if gb.input_objs[i] == int(pin):
-                if state == 0:
-                    if gb.nocolor:
-                        gb.inputs_win.chgat(i, gb.obj_line_length, 1, curses.A_REVERSE)
-                    else:
-                        gb.inputs_win.addstr(i, gb.obj_line_length, " ", curses.color_pair(1))
-                elif state == 1:
-                    if gb.nocolor:
-                        gb.inputs_win.chgat(i, gb.obj_line_length, 1, curses.A_REVERSE)
-                    else:
-                        gb.inputs_win.addstr(i, gb.obj_line_length, " ", curses.color_pair(2))
+                if input_type == "reg":
+                    if state == 0:
+                        if gb.nocolor:
+                            gb.inputs_win.chgat(i, gb.obj_line_length, 1, curses.A_REVERSE)
+                        else:
+                            gb.inputs_win.addstr(i, gb.obj_line_length, " ", curses.color_pair(1))
+                    elif state == 1:
+                        if gb.nocolor:
+                            gb.inputs_win.chgat(i, gb.obj_line_length, 1, curses.A_REVERSE)
+                        else:
+                            gb.inputs_win.addstr(i, gb.obj_line_length, " ", curses.color_pair(2))
+                elif input_type == "temp":
+                    if len(state) < 3:
+                        state = " "+state
+                    gb.inputs_win.addstr(i, gb.obj_line_length - 2, state)
+                elif input_type == "light":
+                    if len(state) < 4:
+                        state = " "+state
+                    gb.inputs_win.addstr(i, gb.obj_line_length - 3, state)
                 gb.inputs_win.refresh()
                 gb.outputs_win.refresh()
                 gb.console_win.refresh()
