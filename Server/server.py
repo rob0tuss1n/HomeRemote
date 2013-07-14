@@ -18,7 +18,7 @@ import tornado.template
 import gui
 import signal
 import thread
-from remotehome import clients, event, events, inputs, outputs, gpio, security, cur, con, sensors, sensors_index, nogui
+from remotehome import clients, event, events, inputs, outputs, gpio, security, cur, con, sensors, sensors_index, nogui, temp_sensors, light_sensors
 
 security = security()
 daemonize = False
@@ -141,7 +141,7 @@ class WebSocket(tornado.websocket.WebSocketHandler):
 
         # Remove a light from the system
         elif args[0] == "deletelight":
-            cur.execute("""DELETE FROM outputs WHERE pin = '%s'""",(int(args[1])))
+            cur.execute("""DELETE FROM outputs WHERE pin = %s""",(args[1]))
             con.commit()
             del outputs[args[1]]
             for i in clients:
@@ -185,7 +185,15 @@ class WebSocket(tornado.websocket.WebSocketHandler):
             else:
                 cur.execute("""DELETE FROM inputs WHERE pin = %s""",(int(args[1])))
                 con.commit()
-                inputs[int(args[1])].stop_input_idle()
+                if inputs[int(args[1])].in_type == "temp":
+                    del temp_sensors[inputs[int(args[1])].name]
+                    sensors_index['temp'].remove(inputs[int(args[1])].name)
+                    del sensors.temp[inputs[int(args[1])].name]
+                elif inputs[int(args[1])].in_type == "light":
+                    del light_sensors[inputs[int(args[1])].name]
+                    sensors_index['light'].remove(inputs[int(args[1])].name)
+                elif inputs[int(args[1])].in_type == "switch" or inputs[int(args[1])].in_type == "motion":
+                    inputs[int(args[1])].stop_input_idle()
                 del inputs[int(args[1])]
                 for i in clients:
                     i.write_message("deleteinput:"+args[1])

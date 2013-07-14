@@ -307,6 +307,7 @@ class gpio(object):
     event_id = None
     idling = False
     mcp = False
+    in_type = None
     
     def __init__(self, pin, name, in_type, direction):
         self.name = name
@@ -324,6 +325,7 @@ class gpio(object):
             #thread.start_new_thread(self.identify, ())
         elif direction == "in":
             self.pin = int(pin)
+            self.in_type = in_type
             if in_type == "switch":
                 GPIO.setup(int(pin), GPIO.IN, pull_up_down=GPIO.PUD_UP)
                 self.start_input_idle()
@@ -617,7 +619,7 @@ class sensors(object):
         while True:
             if int(count) == int(interval['value']):
                 gui.console("Recording current temperatures to database")
-                temp = self.temp[sensor_index['temp'][0]]
+                temp = self.temp[sensors_index['temp'][0]]
                 cur.execute("""INSERT INTO temperature_records VALUES (NULL,%s,%s,now())""",(temp_sensors[sensors_index['temp'][0]],temp))
                 con.commit()
                 count = 0

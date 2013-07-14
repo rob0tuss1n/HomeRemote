@@ -7,7 +7,7 @@ $.get("data/auth.php?action=checkauth", function(data) {
     }
 });
 $(document).ready(function() {
-    ws = new WebSocket('ws://joey.myds.me:9000/');
+    ws = new WebSocket('ws://192.168.1.68:9000/');
     ws.onopen = function() {
         ws.send("declarepins:");
         ws.send("declareevents:");
@@ -109,7 +109,7 @@ $(document).ready(function() {
         $.get("data/lights.php?action=getlights", function(data) {
             lights = JSON.parse(data);
             $.each(lights, function(k, v) {
-                var html = '<tr class="light" data-pin="'+v['pin']+'"><td>'+ v.name+'</td><td><button type="submit" onclick="toggleLight('+"'"+ v.pin+"'"+')" class="small red"><span>Toggle</span></button></td><td><a href="#" onclick="deleteLight('+ v.pin+')"><img src="gfx/icon-delete.gif"></a></td></tr>';
+                var html = '<tr class="light" data-pin="'+v['pin']+'"><td>'+ v.name+'</td><td><button type="submit" onclick="toggleLight('+"'"+ v.pin+"'"+')" class="small red"><span>Toggle</span></button></td><td><a href="#" onclick="deleteLight('+"'"+ v.pin+"'"+')"><img src="gfx/icon-delete.gif"></a></td></tr>';
                 $(html).appendTo($("#lightlist"));
             });
         });
