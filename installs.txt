@@ -1,7 +1,10 @@
 python-mysql
+python-rpi.gpio
+python-tornado
 python
 nginx
+php
+mysql-server
 motion
-easy_install py-notify
 python-psutil
 python-smbus
