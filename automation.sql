@@ -12,6 +12,10 @@ File Encoding         : 65001
 
 Date: 2013-07-14 13:37:27
 */
+CREATE DATABASE automation;
+GRANT ALL PRIVILEGES ON automation.* TO 'automation'@'127.0.0.1' IDENTIFIED BY '6bc878bfcefbf5cdf88db13c76901135';
+GRANT ALL PRIVILEGES ON automation.* TO 'automation'@'localhost' IDENTIFIED BY '6bc878bfcefbf5cdf88db13c76901135';
+USE automation;
 
 SET FOREIGN_KEY_CHECKS=0;
 
@@ -27,11 +31,6 @@ CREATE TABLE `accounts` (
   `sid` text,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
--- ----------------------------
--- Records of accounts
--- ----------------------------
-INSERT INTO `accounts` VALUES ('1', 'Joey Harris', 'kilker12', '54c990e2376f772ad9611cbf20beb0cd', '54c990e2376f772ad9611cbf20beb0cd356a192b7913b04c54574d18c28d46e6395428ab');
 
 -- ----------------------------
 -- Table structure for `events`

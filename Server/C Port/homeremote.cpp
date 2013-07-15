@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <map>
-#include <wiringPi.h>
-#include <mcp23017.h>
+#include "gpio_control.cpp"
 #include <mysql/mysql.h>
 
 class Gpio {
