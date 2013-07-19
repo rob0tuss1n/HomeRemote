@@ -29,7 +29,7 @@ temp_sensors = {}
 light_sensors = {}
 
 try:
-    con = MySQLdb.connect('localhost', 'root', 'legoman1', 'automation', cursorclass=MySQLdb.cursors.DictCursor)
+    con = MySQLdb.connect('localhost', 'root', '', 'automation', cursorclass=MySQLdb.cursors.DictCursor)
 except:
     print "Error connecting to mysql!"
     exit()
