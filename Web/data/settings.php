@@ -1,7 +1,7 @@
 <?php
 $sqlhost = "localhost";
 $sqluser = "root";
-$sqlpass = "legoman1";
+$sqlpass = "";
 $sqldb = "automation";
 
 $websockserver = "192.168.1.68";
