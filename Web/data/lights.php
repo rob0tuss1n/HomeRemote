@@ -2,9 +2,9 @@
 require_once 'settings.php';
 
 function getLights() {
-    $lightquery = mysql_query("SELECT pin,name FROM outputs");
+    $lightquery = sqlite_query("SELECT pin,name FROM outputs");
     $data = array();
-    while($row = mysql_fetch_assoc($lightquery)) {
+    while($row = sqlite_fetch_array($lightquery)) {
         $data[] = $row;
     }
     if($data == []) {

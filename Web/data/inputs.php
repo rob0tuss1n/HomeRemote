@@ -2,8 +2,8 @@
 require_once 'settings.php';
 
 function getInputs() {
-    $eventquery = mysql_query("SELECT * FROM inputs");
-    while($row = mysql_fetch_assoc($eventquery)) {
+    $eventquery = sqlite_query("SELECT * FROM inputs");
+    while($row = sqlite_fetch_array($eventquery)) {
         $data[] = $row;
     }
     return json_encode($data);

@@ -1,0 +1,56 @@
+/*
+Template Name: GodZilla
+Author: Rory Kranendonk
+Author URI: http://www.dreamwire.nl
+Version: 1.0
+*/
+
+#right .box .content .tabmenu {
+	display : block;
+	background : url(../gfx/tabs.gif) repeat-x left top;
+	margin : -1px 0 0;
+	height : 31px;
+}
+
+#right .box .content .tabmenu ul {
+	display : inline-block;
+	margin : 0;
+	padding : 0;
+	list-style : none;
+	width : 100%;
+}
+
+#right .box .content .tabmenu ul li {
+	float : left;
+	background : none;
+	border-right : 1px solid #e5e5e5;
+	padding : 0;
+}
+
+#right .box .content .tabmenu ul li a {
+	float : left;
+	padding : 1px 11px 0 11px;
+	font : 12px/28px 'MyriadProRegular', Arial;
+	color : #807f7f;
+	text-decoration : none;
+	outline : none;
+}
+
+#right .box .content .tabmenu ul li a:hover, #right .box .content .tabmenu ul li a:active, #right .box .content .tabmenu ul li.ui-tabs-selected a {
+	background : #FFFFFF;
+	color : #1c1c1c;
+	text-decoration : none;
+}
+
+#right .box .content .tab {
+	display : block;
+	padding : 20px;
+}
+
+#right .box .content .tab.nopadding {
+	padding : 0;
+}
+
+#right .box .content .ui-tabs-hide {
+	display : none;
+}

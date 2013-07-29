@@ -1,0 +1,171 @@
+/*
+Template Name: GodZilla
+Author: Rory Kranendonk
+Author URI: http://www.dreamwire.nl
+Version: 1.0
+*/
+
+a.btn, a.btn:link, a.btn:active, a.btn:visited {
+	display : inline-block;
+	margin : 0 3px 0 0;
+	text-decoration : none;
+	width : auto;
+	height : 23px;
+}
+
+a.btn.medium, a.btn.medium:link, a.btn.medium:active, a.btn.medium:visited{
+	height : 31px;
+}
+
+a.btn:hover{
+	opacity:0.75;
+	filter:alpha(opacity=75)
+}
+
+a.btn span, a.btn:link span, a.btn:active span, a.btn:visited span {
+	float : left;
+	padding : 0 8px 0 4px;
+	margin : 0 0 0 4px;
+	font : 10px/2.2em Arial;
+	font-weight : bold;
+	text-transform : uppercase;
+	color : #FFFFFF;
+	height : 23px;
+}
+
+a.btn.medium span, a.btn.medium:link span, a.btn.medium:active span, a.btn.medium:visited span{
+	padding : 0 17px 0 13px;
+	font : 12px Arial;
+	line-height : 2.6em;
+	height : 31px;
+}
+
+a.btn.grey, a.btn.grey:link, a.btn.grey:active, a.btn.grey:visited {
+	background : url(../gfx/btn-small.gif) no-repeat left 0 transparent;
+}
+
+a.btn.grey span, a.btn.grey:link span, a.btn.grey:active span, a.btn.grey:visited span {
+	background : url(../gfx/btn-small.gif) no-repeat right 0 transparent;
+	color : #1c1c1c;
+}
+
+a.btn.black, a.btn.black:link, a.btn.black:active, a.btn.black:visited {
+	background : url(../gfx/btn-small.gif) no-repeat left -23px transparent;
+}
+
+a.btn.black span, a.btn.black:link span, a.btn.black:active span, a.btn.black:visited span {
+	background : url(../gfx/btn-small.gif) no-repeat right -23px transparent;
+}
+
+a.btn.red, a.btn.red:link, a.btn.red:active, a.btn.red:visited {
+	background : url(../gfx/btn-small.gif) no-repeat left -46px transparent;
+}
+
+a.btn.red span, a.btn.red:link span, a.btn.red:active span, a.btn.red:visited span {
+	background : url(../gfx/btn-small.gif) no-repeat right -46px transparent;
+}
+
+a.btn.orange, a.btn.orange:link, a.btn.orange:active, a.btn.orange:visited {
+	background : url(../gfx/btn-small.gif) no-repeat left -69px transparent;
+}
+
+a.btn.orange span, a.btn.orange:link span, a.btn.orange:active span, a.btn.orange:visited span {
+	background : url(../gfx/btn-small.gif) no-repeat right -69px transparent;
+}
+
+a.btn.blue, a.btn.blue:link, a.btn.blue:active, a.btn.blue:visited {
+	background : url(../gfx/btn-small.gif) no-repeat left -92px transparent;
+}
+
+a.btn.blue span, a.btn.blue:link span, a.btn.blue:active span, a.btn.blue:visited span {
+	background : url(../gfx/btn-small.gif) no-repeat right -92px transparent;
+}
+
+a.btn.green, a.btn.green:link, a.btn.green:active, a.btn.green:visited {
+	background : url(../gfx/btn-small.gif) no-repeat left -115px transparent;
+}
+
+a.btn.green span, a.btn.green:link span, a.btn.green:active span, a.btn.green:visited span {
+	background : url(../gfx/btn-small.gif) no-repeat right -115px transparent;
+}
+
+a.btn.brown, a.btn.brown:link, a.btn.brown:active, a.btn.brown:visited {
+	background : url(../gfx/btn-small.gif) no-repeat left -138px transparent;
+}
+
+a.btn.brown span, a.btn.brown:link span, a.btn.brown:active span, a.btn.brown:visited span {
+	background : url(../gfx/btn-small.gif) no-repeat right -138px;
+}
+
+a.btn.purple, a.btn.purple:link, a.btn.purple:active, a.btn.purple:visited {
+	background : url(../gfx/btn-small.gif) no-repeat left -161px;
+}
+
+a.btn.purple span, a.btn.purple:link span, a.btn.purple:active span, a.btn.purple:visited span {
+	background : url(../gfx/btn-small.gif) no-repeat right -161px;
+}
+
+a.btn.medium.grey, a.btn.medium.grey:link, a.btn.medium.grey:active, a.btn.medium.grey:visited {
+	background : url(../gfx/buttons-medium.gif) no-repeat left 0 transparent;
+}
+
+a.btn.medium.grey span, a.btn.medium.grey:link span, a.btn.medium.grey:active span, a.btn.medium.grey:visited span {
+	background : url(../gfx/buttons-medium.gif) no-repeat right 0 transparent;
+	color : #1c1c1c;
+}
+
+a.btn.medium.black, a.btn.medium.black:link, a.btn.medium.black:active, a.btn.medium.black:visited {
+	background : url(../gfx/buttons-medium.gif) no-repeat left -31px transparent;
+}
+
+a.btn.medium.black span, a.btn.medium.black:link span, a.btn.medium.black:active span, a.btn.medium.black:visited span {
+	background : url(../gfx/buttons-medium.gif) no-repeat right -31px transparent;
+}
+
+a.btn.medium.red, a.btn.medium.red:link, a.btn.medium.red:active, a.btn.medium.red:visited {
+	background : url(../gfx/buttons-medium.gif) no-repeat left -62px transparent;
+}
+
+a.btn.medium.red span, a.btn.medium.red:link span, a.btn.medium.red:active span, a.btn.medium.red:visited span {
+	background : url(../gfx/buttons-medium.gif) no-repeat right -62px transparent;
+}
+
+a.btn.medium.orange, a.btn.medium.orange:link, a.btn.medium.orange:active, a.btn.medium.orange:visited {
+	background : url(../gfx/buttons-medium.gif) no-repeat left -93px transparent;
+}
+
+a.btn.medium.orange span, a.btn.medium.orange:link span, a.btn.medium.orange:active span, a.btn.medium.orange:visited span {
+	background : url(../gfx/buttons-medium.gif) no-repeat right -93px transparent;
+}
+
+a.btn.medium.blue, a.btn.medium.blue:link, a.btn.medium.blue:active, a.btn.medium.blue:visited {
+	background : url(../gfx/buttons-medium.gif) no-repeat left -124px transparent;
+}
+
+a.btn.medium.blue span, a.btn.medium.blue:link span, a.btn.medium.blue:active span, a.btn.medium.blue:visited span {
+	background : url(../gfx/buttons-medium.gif) no-repeat right -124px transparent;
+}
+
+a.btn.medium.green, a.btn.medium.green:link, a.btn.medium.green:active, a.btn.medium.green:visited {
+	background : url(../gfx/buttons-medium.gif) no-repeat left -155px transparent;
+}
+
+a.btn.medium.green span, a.btn.medium.green:link span, a.btn.medium.green:active span, a.btn.medium.green:visited span {
+	background : url(../gfx/buttons-medium.gif) no-repeat right -155px transparent;
+}
+
+a.btn.medium.brown, a.btn.medium.brown:link, a.btn.medium.brown:active, a.btn.medium.brown:visited {
+	background : url(../gfx/buttons-medium.gif) no-repeat left -186px transparent;
+}
+
+a.btn.medium.brown span, a.btn.medium.brown:link span, a.btn.medium.brown:active span, a.btn.medium.brown:visited span {
+	background : url(../gfx/buttons-medium.gif) no-repeat right -186px;
+}
+
+a.btn.medium.purple, a.btn.medium.purple:link, a.btn.medium.purple:active, a.btn.medium.purple:visited {
+	background : url(../gfx/buttons-medium.gif) no-repeat left -217px;
+}
+
+a.btn.medium.purple span, a.btn.medium.purple:link span, a.btn.medium.purple:active span, a.btn.medium.purple:visited span {
+	background : url(../gfx/buttons-medium.gif) no-repeat right -217px;
+}

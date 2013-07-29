@@ -1,42 +1,18 @@
 #include <stdio.h>
+#include <iostream>
+#include <stdlib.h>
 #include <map>
-#include "gpio_control.cpp"
-#include <mysql/mysql.h>
-
-class Gpio {
-    char Pin;
-    char Direction;
-    char Name;
-
-    public: 
-        void Setup(char, char, char);
-};
-void Gpio::Setup(char name, char pin, char direction) {
-    Pin = pin;
-    Direction = direction;
-    Name = name;
-}
+#include <wiringPi.h>
+#include <mcp23017.h>
+#include <sqlite3.h>
 
 int main() {
-    std::map<std::char, Gpio, std::less<std::char> >  outputs;
-    Gpio *g;
-    MYSQL *conn;
-    MYSQL_ROW row;
-    MYSQL_RES *res;
-	conn = mysql_init (NULL);
-    mysql_real_connect(conn, "localhost", "root", "legoman1", "automation", 0, NULL, 0 );
-    if(mysql_query(conn, "SELECT * FROM outputs")) {
-        printf("%s \n", mysql_error(conn));
-    }   
-   
-    res = mysql_use_result(conn);
-    while((row = mysql_fetch_row(res)) != NULL) {
-        printf("Got output: %s \n", row[2]);
-        g = new Gpio();
-        outputs[row[2]] = g;
-    }
+    system("gpio load i2c");
+    sqlite3 *database;
+    sqlite3_open("database.sqlite", &database);
     wiringPiSetupGpio();
-    mcp23017Setup (100, 0x20) ;
+    mcp23017Setup(100, 0x20);
+    getTableData(database);
     pinMode(22, OUTPUT);
     pinMode(101, OUTPUT);
     while (1) {

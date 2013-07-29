@@ -4,8 +4,8 @@ function getSysTime() {
     return date("g:i A, M d Y");
 }
 function getUnusedInputs() {
-    $query =mysql_query("SELECT * FROM pins WHERE used = '0'");
-    while($row = mysql_fetch_assoc($query)) {
+    $query =sqlite_query("SELECT * FROM pins WHERE used = '0'");
+    while($row = sqlite_fetch_array($query)) {
         $data[] = $row;
     }
     return json_encode($data);

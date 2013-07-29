@@ -7,7 +7,7 @@ $.get("data/auth.php?action=checkauth", function(data) {
     }
 });
 $(document).ready(function() {
-    ws = new WebSocket('ws://192.168.1.68:9000/');
+    ws = new WebSocket('ws://joey.myds.me:9000/');
     ws.onopen = function() {
         ws.send("declarepins:");
         ws.send("declareevents:");

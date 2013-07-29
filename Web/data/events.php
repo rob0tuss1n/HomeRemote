@@ -2,9 +2,9 @@
 require_once 'settings.php';
 
 function getEvents() {
-    $eventquery = mysql_query("SELECT * FROM events");
+    $eventquery = sqlite_query("SELECT * FROM events");
     $data = array();
-    while($row = mysql_fetch_assoc($eventquery)) {
+    while($row = sqlite_fetch_array($eventquery)) {
         $data[] = $row;
     }
     return json_encode($data);

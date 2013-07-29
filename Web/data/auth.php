@@ -13,7 +13,7 @@ function checkAuth() {
         return "false";
     }
     $sid = $_COOKIE['sid'];
-    $realsid = mysql_fetch_assoc(mysql_query("SELECT sid, name FROM accounts WHERE id='".$_COOKIE['uid']."'"));
+    $realsid = sqlite_fetch_array(sqlite_query("SELECT sid, name FROM accounts WHERE id='".$_COOKIE['uid']."'"));
     if($realsid['sid'] == $sid) {
         return $realsid['name'];
     } else {
