@@ -8,9 +8,9 @@ while true; do
             read -sp "Please enter a root password: " password
             read -sp "Please confirm your root password: " confirmpass
             if [ "$password" -nt "$confirmpass" ]; then
-				echo "Passwords do not match! Please restart install script!"
-				exit
-			fi
+                echo "Passwords do not match! Please restart install script!"
+                exit
+            fi
             sudo apt-get update
             sudo apt-get -y install python nginx motion python-pip python-psutil python-rpi.gpio python-tornado python-smbus php5-fpm
             sudo service nginx start
