@@ -2,18 +2,20 @@ import os
 import sys
 if __name__ == "__main__":
     try:
-        with open('lock.pid'): pass
+        with open('/etc/homeremote/lock.pid'): pass
         print 'Lock file already exists! This probably means HomeRemote is already running or that it was improperly shutdown (crash)\n Delete the lockfile at /etc/remotehome/lock.pid and try again!'
         sys.exit()
     except IOError:
-        with open('lock.pid', 'w') as lockfile:
-            os.chmod("./lock.pid", 0666)
+        with open('/etc/homeremote/lock.pid', 'w') as lockfile:
+            os.chmod("/etc/homeremote/lock.pid", 0666)
             lockfile.write(str(os.getpid()))
             lockfile.close()
 import RPi.GPIO as GPIO
 import globals
 import websocketserver
+import socketserver
 import signal
+import thread
 import gui
 from remotehome import gpio, event, security, sensors
 
@@ -31,18 +33,17 @@ def signal_handler(signal, frame):
             sensors.temp_process.terminate()
         except AttributeError:
             pass
-        gui.console('Closed vars')
         sensors.run_sensor_refresh = False
         GPIO.cleanup()
         if not globals.nogui:
             gui.end()
-        os.remove('lock.pid')
+        os.remove('/etc/homeremote/lock.pid')
         sys.exit(0)
 
 if __name__ == "__main__":
     globals.init_globals()
-    security = security()
-    sensors = sensors()
+    globals.security = security()
+    globals.sensors = sensors()
 
     daemonize = False
     for i in sys.argv:
@@ -84,3 +85,4 @@ if __name__ == "__main__":
 
     signal.signal(signal.SIGINT, signal_handler)
     websocketserver.start_websocket_server()
+    socketserver.start_sockets()

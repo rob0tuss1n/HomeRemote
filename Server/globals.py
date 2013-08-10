@@ -9,9 +9,11 @@ def _dict_factory(cursor, row):
 def init_globals():
     global con
     global cur
-    con = sqlite3.connect('database.db')
+    con = sqlite3.connect('/etc/homeremote/database.db')
     con.row_factory = _dict_factory
     cur = con.cursor()
+    global sensors
+    global security
     global clients
     clients = []
     global events

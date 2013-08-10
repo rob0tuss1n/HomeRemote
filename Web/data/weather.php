@@ -1,7 +1,7 @@
 <?php
-require_once 'settings.php';
+require_once './settings.php';
 function getWeather() {
-    $id = sqlite_fetch_assoc(sqlite_query("SELECT value FROM settings WHERE field = 'city_id'"));
+    $id = json_decode($GLOBALS['db']->sql_select("settings");)
     $data = (array) json_decode(file_get_contents("http://api.openweathermap.org/data/2.5/weather?id=".$id['value']));
     foreach($data as $key => $sub) {
         if(is_object($sub)) {

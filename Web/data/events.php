@@ -2,10 +2,12 @@
 require_once 'settings.php';
 
 function getEvents() {
-    $eventquery = sqlite_query("SELECT * FROM events");
+    $eventquery = "SELECT * FROM events";
     $data = array();
-    while($row = sqlite_fetch_array($eventquery)) {
-        $data[] = $row;
+    $data = $GLOBALS['db']->select($eventquery));
+    if($data == []) {
+        $data[] = array("name"=> "No Events",
+                        "id" => "-");
     }
     return json_encode($data);
 }

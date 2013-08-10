@@ -11,8 +11,8 @@ if(!isset($_GET['action'])) {
     $_GET['action'] = "none";
 }
 function getCameraFeeds() {
-    $sql = sqlite_query("SELECT * FROM security_cameras");
-    while($row = sqlite_fetch_array($sql)) {
+    $sql = "SELECT * FROM security_cameras";
+    while($row = $db->select($sql)) {
         $feeds[] = $row;
     }
     return json_encode($feeds);
@@ -21,8 +21,8 @@ function getSnapNames($folder) {
     return json_encode(scandir("/usr/share/nginx/www/cams/".$folder));
 }
 function getUnusedCams() {
-    $sql = sqlite_query("SELECT video_device FROM security_cameras");
-    while($row = sqlite_fetch_array($sql)) {
+    $sql = "SELECT video_device FROM security_cameras";
+    while($row = $db->select($sql)) {
         $data[] = $row;
     }
     return json_encode($data);
