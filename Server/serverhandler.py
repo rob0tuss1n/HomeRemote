@@ -32,7 +32,7 @@ class handle:
                 self.send("error:GPIO already setup on pin " + args[1])
             else:
                 globals.outputs[args[1]] = gpio(args[1], args[2], None, 'out')
-                globals.cur.execute("INSERT INTO outputs VALUES (1,'%s','%s')" % (args[2],args[1]))
+                globals.cur.execute("INSERT INTO outputs VALUES (NULL,'%s','%s')" % (args[2],args[1]))
                 globals.con.commit()
                 for i in globals.clients:
                     self.send("addlight:"+args[1]+":"+args[2])
@@ -72,14 +72,14 @@ class handle:
                 gui.console(str(i)+" "+str(globals.outputs[i].input()))
                 if globals.outputs[i].input() == 0:
                     if globals.outputs[i].mcp:
-                        self.send("pinchange:mcp"+str(globals.outputs[i].pin)+":on")
-                    else:
-                        self.send("pinchange:"+str(globals.outputs[i].pin)+":on")
-                elif globals.outputs[i].input() == 1:
-                    if globals.outputs[i].mcp:
                         self.send("pinchange:mcp"+str(globals.outputs[i].pin)+":off")
                     else:
                         self.send("pinchange:"+str(globals.outputs[i].pin)+":off")
+                elif globals.outputs[i].input() == 1:
+                    if globals.outputs[i].mcp:
+                        self.send("pinchange:mcp"+str(globals.outputs[i].pin)+":on")
+                    else:
+                        self.send("pinchange:"+str(globals.outputs[i].pin)+":on")
             
         # Report back the state of all events as if they changed state
         elif args[0] == "declareevents":

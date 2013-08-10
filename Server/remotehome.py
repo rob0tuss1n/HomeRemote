@@ -34,8 +34,8 @@ class event(object):
     def __init__(self, id):
         self.pipe_thread = Thread(target=self.pipe_listen, args=())
         self.id = id
-        globals.cur.execute("""SELECT * FROM events WHERE id = %s""",(self.id))
-        data = self.globals.cur.fetchone()
+        globals.cur.execute('SELECT * FROM events WHERE id = %s' % (self.id))
+        data = globals.cur.fetchone()
         self.name = data['name']
         self.trigger = int(data['trigger'])
         self.trigger_args = data['trigger_args']
@@ -72,7 +72,7 @@ class event(object):
         
     def stop_event(self):
         if self.event_process != None:
-            globals.cur.execute("""DELETE FROM helper_processes WHERE pid = %s""",(self.event_process.pid))
+            globals.cur.execute('DELETE FROM helper_processes WHERE pid = %s' % (self.event_process.pid))
             globals.con.commit()
             self.event_process.terminate()
             self.event_process = None
@@ -128,7 +128,7 @@ class event(object):
             self.event_process = Process(target=self.event_disable_at_time, args=(self.child_conn,))
         time.sleep(1)
         self.event_process.start()
-        globals.cur.execute("""INSERT INTO helper_processes VALUES (%s,%s,%s)""",(self.event_process.pid, "event", self.id))
+        globals.cur.execute('INSERT INTO helper_processes VALUES (%s,"%s",%s)' % (self.event_process.pid, "event", self.id))
         globals.con.commit()
         gui.change_event_state(self.id, 1)
         
@@ -148,17 +148,17 @@ class event(object):
             conn.send("inputchange:"+str(self.trigger)+":on")
             gui.change_input_state(int(self.trigger), 1, "reg")
             for i in self.who:
-                if globals.outputs[i].input() == 0:
+                if globals.outputs[i].input() == 1:
                     alreadyon.append(i)
                     gui.console("Pin already on")
                 else:
                     globals.outputs[i].output(1)
-                    gui.change_output_state(int(i), 1)
+                    gui.change_output_state(i, 1)
                     conn.send("pinchange:"+i+":on")
             targettime = int(time.time()) + int(self.timeout)
             changed = False
             while not targettime == int(time.time()):
-                if GPIO.input(int(self.trigger)):
+                if globals.inputs[int(self.trigger)].input():
                     if changed:
                         conn.send("inputchange:"+str(self.trigger)+":on")
                         gui.change_input_state(int(self.trigger), 1, "reg")
@@ -171,9 +171,9 @@ class event(object):
                 time.sleep(0.2)
             for i in self.who:
                 if not i in alreadyon:
-                    globals.outputs[i].output(1)
+                    globals.outputs[i].output(0)
                     conn.send("pinchange:"+i+":off")
-                    gui.change_output_state(int(i), 0)
+                    gui.change_output_state(i, 0)
 
     # Toggles all pins to same state first of which was not the previous state in this function
     def output_toggle_on_input(self, conn):
@@ -342,12 +342,16 @@ class gpio(object):
 
     def output(self, value):
         if self.mcp:
-            gui.change_output_state("mcp"+str(self.pin), not int(value))
+            gui.change_output_state("mcp"+str(self.pin), int(value))
             globals.mcp.output(self.pin, int(value))
-            for i in globals.clients:
-                i.write_message("pinchange:mcp"+str(self.pin)+":off")
+            if int(value) == 1:
+                for i in globals.clients:
+                    i.write_message("pinchange:mcp"+str(self.pin)+":on")
+            elif int(value) == 0:
+                for i in globals.clients:
+                    i.write_message("pinchange:mcp"+str(self.pin)+":off")
         else:
-            gui.change_output_state(self.pin, not value)
+            gui.change_output_state(self.pin, value)
             GPIO.output(self.pin, int(value))
             if int(value) == 1:
                 for i in globals.clients:
@@ -432,16 +436,9 @@ class gpio(object):
     def toggle(self):
         if self.input() == 0:
             self.output(1)
-            self.manual_on = False
             return True
         elif self.input() == 1:
             self.output(0)
-            self.manual_on = True
-            for i in globals.clients:
-                if self.mcp:
-                    i.write_message("pinchange:mcp"+str(self.pin)+":on")
-                else:
-                    i.write_message("pinchange:"+str(self.pin)+":on")
             return True
         else:
             for i in globals.clients:

@@ -157,6 +157,16 @@ class SQlite3ToJSONConverter {
 
         return json_encode($aResult);
     }
+    public function custom_query($query) {
+        $uResult = $this->database->query($query);
+
+        $aResult = $uResult->fetchArray(SQLITE3_ASSOC);
+
+        return $aResult;
+    }
+    public function insert_query($query) {
+        $uResult = $this->database->query($query);
+    }
 }
 
 ?>

@@ -45,7 +45,7 @@ while true; do
             # apt-get update > /dev/null
             
             echo "Installing all required packages"
-            apt-get -y install python lighttpd php5-common php5-cgi php5 motion sqlite3 python-pip python-psutil python-rpi.gpio git python-tornado python-smbus > /dev/null
+            apt-get -y install python lighttpd php5-common php5-cgi php5 motion sqlite3 python-pip python-psutil python-rpi.gpio git python-tornado python-smbus i2c-tools > /dev/null
             echo "Enabling fastcgi for PHP"
             lighty-enable-mod fastcgi-php > /dev/null
             echo "Reloading webserver"
@@ -58,6 +58,8 @@ while true; do
             rm /var/www/index.html > /dev/null
             cp -r ./Web/* /var/www/ > /dev/null
             echo "Enabling I2C and SPI devices"
+            echo "i2c-bcm2708" >> /etc/modules
+            echo "i2c-dev" >> /etc/modules
             rm -f /etc/modprobe.d/raspi-blacklist.conf > /dev/null
             cp ./raspi-blacklist.conf /etc/modprobe.d/
             echo "Downloading RF24 library"
