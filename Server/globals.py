@@ -12,6 +12,14 @@ def init_globals():
     con = sqlite3.connect('/etc/homeremote/database.db')
     con.row_factory = _dict_factory
     cur = con.cursor()
+    global blockspi
+    global blocki2c
+    cur.execute("SELECT value FROM settings WHERE 'id'=7")
+    if cur.fetchone()['value'] == "y":
+        blockspi = True
+    cur.execute("SELECT value FROM settings WHERE 'id'=8")
+    if cur.fetchone()['value'] == "y":
+        blocki2c = True
     global sensors
     global security
     global clients

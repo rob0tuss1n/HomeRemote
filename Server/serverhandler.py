@@ -20,6 +20,14 @@ class handle:
         message = self.message
         args = message.split(":")    
         if args[0] == "newoutput":
+            if globals.blockspi:
+                if args[1] == "9" || args[1] == "10" || args[1] == "11":
+                    self.send("error:Cannot use these GPIO's while wireless sensors are in use!"
+                    return
+            if globals.blocki2c:
+                if args[1] == "2" || args[1] == "3":
+                    self.send("error:Cannot use these GPIO's while I2C GPIO expander is in use!")
+                    return
             if args[1] in globals.outputs:
                 self.send("error:GPIO already setup on pin " + args[1])
             else:
@@ -123,6 +131,14 @@ class handle:
                     
         # Create a new input (name, pin, type, )
         elif args[0] == "newinput":
+            if globals.blockspi:
+                if args[1] == "9" || args[1] == "10" || args[1] == "11":
+                    self.send("error:Cannot use these GPIO's while wireless sensors are in use!"
+                    return
+            if globals.blocki2c:
+                if args[1] == "2" || args[1] == "3":
+                    self.send("error:Cannot use these GPIO's while I2C GPIO expander is in use!")
+                    return
             if args[1] in globals.inputs:
                 self.send("error:Input already exists on pin "+args[2])
             else:

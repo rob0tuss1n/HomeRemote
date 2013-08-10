@@ -29,14 +29,18 @@ while true; do
     case $yn in
         [Yy]* )
             BASEDIR=$(pwd)
+            read -p "Please enter an administrator account username: " adminuser
             read -sp "Please enter a root password: " password
             echo
             read -sp "Please confirm your root password: " confirmpass
             echo
+            read -p "Will you be using wireless sensor nodes (nRF24L01+, nRF24L01) with this system? : (y/n) " blockspi
+            read -p "Will you be using an I2C based GPIO expander (MCP23017) with this system?: (y/n) " blocki2c
             if [ $password != $confirmpass ]; then
                 echo "Passwords do not match! Please restart install script!"
                 exit
             fi
+            ROOTPASS=$(echo $password | md5sum)
             echo "Updating apt repositories to make sure we get the latest packages"
             # apt-get update > /dev/null
             
@@ -79,13 +83,16 @@ while true; do
             echo "Downloading city ID for weather API. Weather API services provided by OpenWeatherMap.org. Weather data provided by Weather.gov"
             wget -q -O weather.json "http://api.openweathermap.org/data/2.5/weather?q=$city" > /dev/null
             cid=$(grep -Po '(?<="id":)[^,]*' weather.json | tail -1) > /dev/null
-            echo "Storing user information into database"
+            echo "Storing user information and settings into database"
+            sqlite3 /etc/homeremote/database.db "INSERT INTO "main"."accounts" ("id", "name", "username", "password") VALUES (NULL, '$name', '$adminuser', '$ROOTPASS');"
             sqlite3 /etc/homeremote/database.db "INSERT INTO "main"."settings" ("id", "field", "value") VALUES (1, 'city_id', '$cid');"
             sqlite3 /etc/homeremote/database.db "INSERT INTO "main"."settings" ("id", "field", "value") VALUES (2, 'owner_name', '$name');"
             sqlite3 /etc/homeremote/database.db "INSERT INTO "main"."settings" ("id", "field", "value") VALUES (3, 'street_address', '$streetadd');"
             sqlite3 /etc/homeremote/database.db "INSERT INTO "main"."settings" ("id", "field", "value") VALUES (4, 'city', '$city');"
             sqlite3 /etc/homeremote/database.db "INSERT INTO "main"."settings" ("id", "field", "value") VALUES (5, 'state', '$state');"
             sqlite3 /etc/homeremote/database.db "INSERT INTO "main"."settings" ("id", "field", "value") VALUES (6, 'zip', '$zip');"
+            sqlite3 /etc/homeremote/database.db "INSERT INTO "main"."settings" ("id", "field", "value") VALUES (7, 'blockspi', '$blockspi');"
+            sqlite3 /etc/homeremote/database.db "INSERT INTO "main"."settings" ("id", "field", "value") VALUES (8, 'blocki2c', '$blocki2c');"
             echo
             echo "Thank you for installing HomeRemote!"
             echo "We have to reboot your Raspberry Pi to put some system changes into effect"
