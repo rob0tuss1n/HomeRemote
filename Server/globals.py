@@ -14,11 +14,13 @@ def init_globals():
     cur = con.cursor()
     global blockspi
     global blocki2c
-    cur.execute("SELECT value FROM settings WHERE 'id'=7")
-    if cur.fetchone()['value'] == "y":
+    cur.execute("SELECT value FROM settings WHERE 'settings'.'field'='blockspi'")
+    data = cur.fetchone()
+    if data['value'] == "y":
         blockspi = True
-    cur.execute("SELECT value FROM settings WHERE 'id'=8")
-    if cur.fetchone()['value'] == "y":
+    cur.execute("SELECT value FROM settings WHERE 'settings'.'field'='blocki2c'")
+    data1 = cur.fetchone()
+    if data1['value'] == "y":
         blocki2c = True
     global sensors
     global security
